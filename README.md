@@ -288,3 +288,4 @@ Update this log after your testnet deployment:
 
 <img width="1920" height="1080" alt="Screenshot (447)" src="https://github.com/user-attachments/assets/56ba8e28-4ef4-49f2-8392-1c8f6833d668" />
 
+<img width="1920" height="1080" alt="Screenshot (448)" src="https://github.com/user-attachments/assets/d2974ba9-e44d-4571-af97-1a1be7ba7793" />
