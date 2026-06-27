@@ -1,11 +1,31 @@
 #![no_std]
 use soroban_sdk::{
-    contract, contractimpl, contracttype, symbol_short, Address, BytesN, Env, Val, Vec,
-    IntoVal, Symbol,
+    contract, contractimpl, contracttype, symbol_short, Address, BytesN, Env, Vec,
+    Symbol, IntoVal,
 };
 
-// Import campaign types and client directly from campaign crate
-use seedchain_campaign::{ProjectCampaignClient, Milestone};
+// ── Milestone types (mirrored from campaign contract) ──────────────────
+// These are defined locally to avoid linking the campaign crate directly,
+// which would cause duplicate `init` symbol errors in the WASM linker.
+
+#[derive(Clone, Debug, PartialEq)]
+#[contracttype]
+pub enum MilestoneStatus {
+    Pending,
+    PayoutRequested,
+    Paid,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+#[contracttype]
+pub struct Milestone {
+    pub id: u32,
+    pub description: soroban_sdk::String,
+    pub amount_pct: u32,
+    pub status: MilestoneStatus,
+}
+
+// ── Registry storage keys ──────────────────────────────────────────────
 
 #[derive(Clone, Debug, PartialEq)]
 #[contracttype]
@@ -22,12 +42,7 @@ const LEDGER_THRESHOLD: u32 = 1000;
 const LEDGER_EXTEND_TO: u32 = 10000;
 
 fn extend_instance_ttl(env: &Env) {
-    env.storage().instance().extend_ttl(LEDGER_THRESHOLD, LEDROW_EXTEND_TO_FIX());
-}
-
-// Fix LEDROW_EXTEND_TO_FIX: use LEDGER_EXTEND_TO constant
-fn LEDROW_EXTEND_TO_FIX() -> u32 {
-    LEDGER_EXTEND_TO
+    env.storage().instance().extend_ttl(LEDGER_THRESHOLD, LEDGER_EXTEND_TO);
 }
 
 #[contract]
@@ -102,9 +117,19 @@ impl SyndicateRegistry {
         let deployer = env.deployer().with_current_contract(salt);
         let campaign_addr = deployer.deploy(wasm_hash);
 
-        // Initialize campaign contract via client
-        let campaign_client = ProjectCampaignClient::new(&env, &campaign_addr);
-        campaign_client.init(&founder, &token, &funding_goal, &deadline, &milestones);
+        // Initialize campaign contract dynamically (avoids linking the campaign crate)
+        let init_args: Vec<soroban_sdk::Val> = (
+            founder.clone(),
+            token,
+            funding_goal,
+            deadline,
+            milestones,
+        ).into_val(&env);
+        env.invoke_contract::<()>(
+            &campaign_addr,
+            &Symbol::new(&env, "init"),
+            init_args,
+        );
 
         // Track campaign address
         let mut campaigns: Vec<Address> = env.storage().instance().get(&DataKey::Campaigns).unwrap();
@@ -150,4 +175,3 @@ impl SyndicateRegistry {
 
 #[cfg(test)]
 mod test;
-

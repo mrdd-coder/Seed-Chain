@@ -8,7 +8,6 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 soroban-sdk = { version = "21.0.1" }
-seedchain-campaign = { path = "../campaign" }
 
 [dev-dependencies]
 soroban-sdk = { version = "21.0.1", features = ["testutils"] }
