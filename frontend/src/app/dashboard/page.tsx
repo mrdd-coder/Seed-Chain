@@ -5,11 +5,16 @@ import Navbar from '../../components/Navbar';
 import { useWalletStore, NetworkId } from '../../state/wallet';
 import { useTransactionStore } from '../../state/transactions';
 import { getCampaigns, getCampaignInfo, getCampaignMilestones, getPledgeAmount, executeContractCall, CampaignInfo, Milestone } from '../../services/stellar';
-import { nativeToScVal, Address, xdr } from '@stellar/stellar-sdk';
+import { nativeToScVal, Address, xdr, Account } from '@stellar/stellar-sdk';
 
 export default function Dashboard() {
   const { address, isConnected, network, rpcUrl } = useWalletStore();
   const { addTransaction, addConsoleLog } = useTransactionStore();
+
+  // Form states for Level 1 XLM Transfer
+  const [xlmDest, setXlmDest] = useState('');
+  const [xlmAmt, setXlmAmt] = useState('5');
+  const [xlmSending, setXlmSending] = useState(false);
 
   const [activeTab, setActiveTab] = useState<'browse' | 'create' | 'manage'>('browse');
   const [registryAddress, setRegistryAddress] = useState('CBRegistryAddressExample1234567890Testnet');
@@ -306,6 +311,105 @@ export default function Dashboard() {
     }
   };
 
+  const handleXlmTransfer = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isConnected || !address) {
+      alert('Please connect your Freighter wallet first.');
+      return;
+    }
+    if (!xlmDest.startsWith('G') || xlmDest.length !== 56) {
+      alert('Please enter a valid Stellar public G-address (56 characters).');
+      return;
+    }
+
+    setXlmSending(true);
+    const txId = Math.random().toString(36).substring(7);
+    addTransaction({
+      id: txId,
+      operation: `Send ${xlmAmt} XLM to ${xlmDest.substring(0, 8)}...`,
+      status: 'pending',
+    });
+    addConsoleLog(`[XLM TRANSFER] Initiating transfer of ${xlmAmt} XLM to ${xlmDest}...`);
+
+    try {
+      // 1. Fetch account sequence using Horizon
+      addConsoleLog('Connecting to Horizon Testnet to load account sequence...');
+      const response = await fetch(`https://horizon-testnet.stellar.org/accounts/${address}`);
+      if (!response.ok) {
+        throw new Error('Failed to load sender account details from Horizon.');
+      }
+      const accountData = await response.json();
+      
+      // 2. Build the XLM Payment Transaction
+      const { TransactionBuilder, Operation, Asset, Networks } = await import('@stellar/stellar-sdk');
+      const senderAccount = new Account(address, accountData.sequence);
+      
+      addConsoleLog('Building native XLM payment operation...');
+      const tx = new TransactionBuilder(senderAccount, {
+        fee: '1000',
+        networkPassphrase: Networks.TESTNET,
+      })
+        .addOperation(
+          Operation.payment({
+            destination: xlmDest,
+            asset: Asset.native(),
+            amount: xlmAmt,
+          })
+        )
+        .setTimeout(30)
+        .build();
+
+      // 3. Request signature from Freighter via kit
+      const { StellarWalletsKit } = await import('@creit.tech/stellar-wallets-kit');
+      addConsoleLog('Requesting Freighter wallet signature...');
+      const { signedTxXdr } = await StellarWalletsKit.signTransaction(tx.toXDR(), {
+        address: address,
+        networkPassphrase: Networks.TESTNET,
+      });
+
+      // 4. Submit signed XDR to Horizon Testnet
+      addConsoleLog('Submitting signed transaction to Horizon Testnet...');
+      const submitBody = new URLSearchParams();
+      submitBody.append('tx', signedTxXdr);
+
+      const submitRes = await fetch('https://horizon-testnet.stellar.org/transactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: submitBody,
+      });
+
+      const submitData = await submitRes.json();
+      if (!submitRes.ok) {
+        const detail = submitData.extras?.result_codes?.operations?.[0] || submitData.detail || 'Submission failed';
+        throw new Error(detail);
+      }
+
+      const txHash = submitData.hash;
+      const explorer = `https://stellar.expert/explorer/testnet/tx/${txHash}`;
+      addConsoleLog(`[SUCCESS] XLM transfer successful! Hash: ${txHash}`);
+      
+      useTransactionStore.getState().updateTransaction(txId, {
+        status: 'success',
+        hash: txHash,
+        explorerLink: explorer,
+      });
+      
+      alert(`XLM Transfer Succeeded!\nHash: ${txHash}`);
+      setXlmDest('');
+    } catch (error: any) {
+      console.error(error);
+      const errMsg = error.message || 'Transaction rejected/failed';
+      addConsoleLog(`[ERROR] XLM transfer failed: ${errMsg}`);
+      useTransactionStore.getState().updateTransaction(txId, {
+        status: 'failed',
+        error: errMsg,
+      });
+      alert(`XLM Transfer Failed: ${errMsg}`);
+    } finally {
+      setXlmSending(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors">
       <Navbar />
@@ -374,69 +478,121 @@ export default function Dashboard() {
 
         {/* TAB content: BROWSE */}
         {activeTab === 'browse' && !selectedCampaign && (
-          <div className="space-y-6">
-            {loading ? (
-              <div className="py-20 text-center text-slate-500">Loading campaigns...</div>
-            ) : campaigns.length === 0 ? (
-              <div className="py-20 text-center text-slate-500 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl">
-                No campaigns active. Launch a campaign using the tab above!
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {campaigns.map((camp, idx) => {
-                  const percent = Math.min(Math.round((Number(camp.totalPledged) / Number(camp.goal)) * 100), 100);
-                  const isSim = camp.address.startsWith('CCampaign');
-                  return (
-                    <div
-                      key={idx}
-                      onClick={() => handleSelectCampaign(camp)}
-                      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md cursor-pointer hover:border-orange-500/30 transition-all group flex flex-col justify-between"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between mb-4">
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                            isSim ? 'bg-indigo-50 border-indigo-200 text-indigo-600 dark:bg-indigo-950/20' : 'bg-orange-50 border-orange-200 text-orange-600 dark:bg-orange-950/20'
-                          } border`}>
-                            {isSim ? 'SIMULATOR SANDBOX' : 'SOROBAN CONTRACT'}
-                          </span>
-                          {camp.isClosed && (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400">
-                              Closed
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start text-left">
+            {/* Left side: Campaigns list */}
+            <div className="lg:col-span-2 space-y-6">
+              {loading ? (
+                <div className="py-20 text-center text-slate-500">Loading campaigns...</div>
+              ) : campaigns.length === 0 ? (
+                <div className="py-20 text-center text-slate-500 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl">
+                  No campaigns active. Launch a campaign using the tab above!
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {campaigns.map((camp, idx) => {
+                    const percent = Math.min(Math.round((Number(camp.totalPledged) / Number(camp.goal)) * 100), 100);
+                    const isSim = camp.address.startsWith('CCampaign');
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() => handleSelectCampaign(camp)}
+                        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md cursor-pointer hover:border-orange-500/30 transition-all group flex flex-col justify-between"
+                      >
+                        <div>
+                          <div className="flex items-center justify-between mb-4">
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                              isSim ? 'bg-indigo-50 border-indigo-200 text-indigo-600 dark:bg-indigo-950/20' : 'bg-orange-50 border-orange-200 text-orange-600 dark:bg-orange-950/20'
+                            } border`}>
+                              {isSim ? 'SIMULATOR SANDBOX' : 'SOROBAN CONTRACT'}
                             </span>
-                          )}
-                        </div>
-                        
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-orange-600 transition-colors">
-                          {camp.address.includes('Solar') ? 'SolarGrid Protocol' : camp.address.includes('Stellar') ? 'StellarPay Mobile' : `Campaign ${camp.address.substring(0, 8)}`}
-                        </h3>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mb-4 truncate">
-                          Address: {camp.address}
-                        </p>
-                        
-                        <div className="space-y-2 mb-6">
-                          <div className="flex justify-between text-xs font-semibold">
-                            <span className="text-slate-500">Pledge Progress</span>
-                            <span className="text-slate-950 dark:text-white">
-                              {percent}% ({camp.totalPledged} / {camp.goal} USDC)
-                            </span>
+                            {camp.isClosed && (
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400">
+                                Closed
+                              </span>
+                            )}
                           </div>
-                          <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                            <div className="bg-orange-600 h-full rounded-full" style={{ width: `${percent}%` }}></div>
+                          
+                          <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-orange-600 transition-colors">
+                            {camp.address.includes('Solar') ? 'SolarGrid Protocol' : camp.address.includes('Stellar') ? 'StellarPay Mobile' : `Campaign ${camp.address.substring(0, 8)}`}
+                          </h3>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mb-4 truncate">
+                            Address: {camp.address}
+                          </p>
+                          
+                          <div className="space-y-2 mb-6">
+                            <div className="flex justify-between text-xs font-semibold">
+                              <span className="text-slate-500">Pledge Progress</span>
+                              <span className="text-slate-950 dark:text-white">
+                                {percent}% ({camp.totalPledged} / {camp.goal} USDC)
+                              </span>
+                            </div>
+                            <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                              <div className="bg-orange-600 h-full rounded-full" style={{ width: `${percent}%` }}></div>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="flex justify-between items-center text-xs text-slate-500 border-t border-slate-100 dark:border-slate-800 pt-4">
-                        <span>Goal: {camp.goal} USDC</span>
-                        <span className="font-bold text-orange-600 dark:text-orange-400 group-hover:underline">
-                          View details →
-                        </span>
+                        <div className="flex justify-between items-center text-xs text-slate-500 border-t border-slate-100 dark:border-slate-800 pt-4">
+                          <span>Goal: {camp.goal} USDC</span>
+                          <span className="font-bold text-orange-600 dark:text-orange-400 group-hover:underline">
+                            View details →
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Right side: XLM Transfer Panel (Level 1 Requirement) */}
+            <div className="lg:col-span-1 space-y-6">
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+                <div>
+                  <h3 className="font-extrabold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                    <span className="text-orange-600">🚀</span> Stellar XLM Payment
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    Send native XLM transactions directly on the Stellar Testnet (Level 1 Requirement).
+                  </p>
+                </div>
+
+                <form onSubmit={handleXlmTransfer} className="space-y-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Destination Address</label>
+                    <input
+                      type="text"
+                      value={xlmDest}
+                      onChange={(e) => setXlmDest(e.target.value)}
+                      className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-orange-500 w-full"
+                      placeholder="e.g. G..."
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">XLM Amount</label>
+                    <input
+                      type="number"
+                      value={xlmAmt}
+                      onChange={(e) => setXlmAmt(e.target.value)}
+                      className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-orange-500 w-full"
+                      placeholder="5"
+                      min="1"
+                      required
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={xlmSending}
+                    className="w-full py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl text-xs transition-all cursor-pointer disabled:bg-slate-400"
+                  >
+                    {xlmSending ? 'Sending Payment...' : 'Send XLM Transaction'}
+                  </button>
+                </form>
               </div>
-            )}
+            </div>
           </div>
         )}
 

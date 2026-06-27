@@ -12,10 +12,12 @@ interface WalletState {
   network: NetworkId;
   isConnected: boolean;
   rpcUrl: string;
+  xlmBalance: string | null;
   connect: (walletId: string, address: string) => void;
   disconnect: () => void;
   setNetwork: (network: NetworkId) => void;
   setRpcUrl: (rpcUrl: string) => void;
+  setXlmBalance: (balance: string | null) => void;
 }
 
 const DEFAULT_RPC_TESTNET = 'https://soroban-testnet.stellar.org';
@@ -29,13 +31,15 @@ export const useWalletStore = create<WalletState>()(
       network: NetworkId.TESTNET,
       isConnected: false,
       rpcUrl: DEFAULT_RPC_TESTNET,
+      xlmBalance: null,
       connect: (walletId, address) => set({ walletId, address, isConnected: true }),
-      disconnect: () => set({ walletId: null, address: null, isConnected: false }),
+      disconnect: () => set({ walletId: null, address: null, isConnected: false, xlmBalance: null }),
       setNetwork: (network) => set((state) => ({
         network,
         rpcUrl: network === NetworkId.TESTNET ? DEFAULT_RPC_TESTNET : DEFAULT_RPC_LOCAL,
       })),
       setRpcUrl: (rpcUrl) => set({ rpcUrl }),
+      setXlmBalance: (xlmBalance) => set({ xlmBalance }),
     }),
     {
       name: 'seedchain-wallet-session',

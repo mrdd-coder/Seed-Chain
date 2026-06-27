@@ -10,9 +10,40 @@ import { AlbedoModule } from '@creit.tech/stellar-wallets-kit/modules/albedo';
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { address, walletId, network, isConnected, connect, disconnect, setNetwork } = useWalletStore();
+  const { address, walletId, network, isConnected, xlmBalance, connect, disconnect, setNetwork, setXlmBalance } = useWalletStore();
   const [mounted, setMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Fetch XLM balance from Horizon Testnet
+  const fetchBalance = async (addr: string) => {
+    try {
+      const res = await fetch(`https://horizon-testnet.stellar.org/accounts/${addr}`);
+      if (res.ok) {
+        const data = await res.json();
+        const nativeBalance = data.balances.find((b: any) => b.asset_type === 'native');
+        if (nativeBalance) {
+          setXlmBalance(Number(nativeBalance.balance).toFixed(2));
+        }
+      } else {
+        setXlmBalance('0.00');
+      }
+    } catch (error) {
+      console.error('Failed to fetch XLM balance:', error);
+      setXlmBalance('0.00');
+    }
+  };
+
+  // Poll balance when connected
+  useEffect(() => {
+    if (isConnected && address) {
+      fetchBalance(address);
+      const interval = setInterval(() => {
+        fetchBalance(address);
+      }, 10000);
+      return () => clearInterval(interval);
+    }
+  }, [isConnected, address]);
+
   // Avoid hydration mismatch by checking mounting state
   useEffect(() => {
     setMounted(true);
@@ -104,6 +135,9 @@ export default function Navbar() {
               </div>
               <span className="text-xs font-medium font-mono text-slate-600 dark:text-slate-300">
                 {address.substring(0, 5)}...{address.substring(address.length - 4)}
+              </span>
+              <span className="text-xs font-black text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/40 px-2 py-0.5 rounded border border-orange-100 dark:border-orange-900/40">
+                {xlmBalance !== null ? `${xlmBalance} XLM` : '... XLM'}
               </span>
               <button
                 onClick={disconnect}
