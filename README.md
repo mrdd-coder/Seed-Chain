@@ -4,7 +4,37 @@ SeedChain is a production-grade, decentralized crowdfunding and startup investme
 
 ---
 
-## 1. Product Overview & Problem Statement
+## 📌 Table of Contents
+
+* [1. Product Overview & Problem Statement](#-1-product-overview--problem-statement)
+  * [The Problem](#the-problem)
+  * [The SeedChain Solution](#the-seedchain-solution)
+* [2. Technical Stack](#-2-technical-stack)
+* [3. Directory Structure](#-3-directory-structure)
+* [4. Technical Architecture & Component Flow](#-4-technical-architecture--component-flow)
+  * [Inter-Contract Communication Flow](#inter-contract-communication-flow)
+* [5. Smart Contract Design](#-5-smart-contract-design)
+  * [Data Storage & TTL Preservation](#data-storage--ttl-preservation)
+  * [Access Control](#access-control)
+* [6. Local Development & Testing](#-6-local-development--testing)
+  * [Prerequisites](#prerequisites)
+  * [Compilation & Testing](#compilation--testing)
+  * [Frontend Development](#frontend-development)
+* [7. Stellar Testnet Deployment Guide](#-7-stellar-testnet-deployment-guide)
+  * [Step 1: Configure Deployer Identity](#step-1-configure-deployer-identity)
+  * [Step 2: Compile WASM Bytecodes](#step-2-compile-wasm-bytecodes)
+  * [Step 3: Install Bytecodes to Testnet](#step-3-install-bytecodes-to-testnet)
+  * [Step 4: Deploy the Syndicate Registry](#step-4-deploy-the-syndicate-registry)
+  * [Step 5: Initialize the Syndicate Registry](#step-5-initialize-the-syndicate-registry)
+  * [Step 6: Configure Frontend](#step-6-configure-frontend)
+* [8. Syndicate Configuration Log & Verification](#-8-syndicate-configuration-log--verification)
+  * [On-Chain Contract Verification Links](#on-chain-contract-verification-links)
+* [9. Security Considerations](#-9-security-considerations)
+* [10. Transaction Screenshots](#-10-transaction-screenshots)
+
+---
+
+## 🔍 1. Product Overview & Problem Statement
 
 ### The Problem
 Traditional startup crowdfunding platforms (and standard Web3 launchpads) suffer from a lack of accountability and trust:
@@ -14,14 +44,25 @@ Traditional startup crowdfunding platforms (and standard Web3 launchpads) suffer
 
 ### The SeedChain Solution
 SeedChain introduces **Milestone Crowd Escrows** via Soroban smart contracts:
-- **Factory Architecture:** A central registry deploys isolated escrow contracts for each startup project.
-- **Milestone-Gated Releases:** Funds are disbursed in waves (e.g., 30% on MVP, 40% on alpha launch, 30% on public release).
-- **Syndicate Governance:** Founders request milestone payouts, and investors vote with weights proportional to their pledge size. Payouts require >50% approval.
-- **On-Chain Refund Trigger:** If a founder defaults or fails to deliver, investors can vote to trigger a proportional refund of the remaining escrow.
+* **Factory Architecture:** A central registry deploys isolated escrow contracts for each startup project.
+* **Milestone-Gated Releases:** Funds are disbursed in waves (e.g., 30% on MVP, 40% on alpha launch, 30% on public release).
+* **Syndicate Governance:** Founders request milestone payouts, and investors vote with weights proportional to their pledge size. Payouts require >50% approval.
+* **On-Chain Refund Trigger:** If a founder defaults or fails to deliver, investors can vote to trigger a proportional refund of the remaining escrow.
 
 ---
 
-## 2. Directory Structure
+## 🛠️ 2. Technical Stack
+
+* **Smart Contracts:** Rust, Soroban SDK (v21.7.7)
+* **Frontend:** Next.js 15 (App Router), TypeScript, Tailwind CSS, shadcn/ui
+* **State Management:** Zustand (wallet session persistence, transaction log logs)
+* **Data Querying:** React Query (RPC state synchronization)
+* **Wallet Connection:** StellarWalletsKit SDK (Freighter / Albedo)
+* **Charts & Data Visuals:** Recharts
+
+---
+
+## 📂 3. Directory Structure
 
 The project has been organized with a feature-based architecture separating smart contracts, deployment tools, and the Next.js frontend app:
 
@@ -82,7 +123,7 @@ SeedChain/
 
 ---
 
-## 3. Technical Architecture & Component Flow
+## 📐 4. Technical Architecture & Component Flow
 
 ```mermaid
 graph TD
@@ -131,7 +172,7 @@ sequenceDiagram
 
 ---
 
-## 4. Smart Contract Design
+## 🔒 5. Smart Contract Design
 
 The contracts are built in Rust using the official **Soroban Rust SDK**:
 
@@ -142,32 +183,22 @@ To protect against State Archival fees on Stellar, we use a hybrid storage desig
 
 ### Access Control
 We enforce strict role-based authorization:
-- `require_auth()` is called on user addresses (founders, investors) to verify signatures.
-- Only the `Admin` of the `SyndicateRegistry` can set fees, register WASM, or execute contract upgrades.
-- Only the `Founder` of a `ProjectCampaign` can request milestone disbursements.
+* `require_auth()` is called on user addresses (founders, investors) to verify signatures.
+* Only the `Admin` of the `SyndicateRegistry` can set fees, register WASM, or execute contract upgrades.
+* Only the `Founder` of a `ProjectCampaign` can request milestone disbursements.
 
 ---
 
-## 5. Technical Stack
-
-- **Smart Contracts:** Rust, Soroban SDK (v21.0.1)
-- **Frontend:** Next.js 15 (App Router), TypeScript, Tailwind CSS, shadcn/ui
-- **State Management:** Zustand (wallet session persistence, transaction log logs)
-- **Data Querying:** React Query (RPC state synchronization)
-- **Wallet Connection:** StellarWalletsKit SDK (Freighter / Albedo)
-- **Charts & Data Visuals:** Recharts
-
----
-
-## 6. Local Development & Testing
+## 💻 6. Local Development & Testing
 
 ### Prerequisites
-- Node.js (v20+ / v24 recommended)
-- Rust and Cargo (v1.81+)
-- Target: `rustup target add wasm32-unknown-unknown`
-- Stellar CLI: `cargo install --locked stellar-cli` (to deploy on ledger)
+* Node.js (v20+ recommended)
+* Rust and Cargo (v1.81+)
+* Target: `rustup target add wasm32-unknown-unknown`
+* Target: `rustup target add wasm32v1-none`
 
 ### Compilation & Testing
+
 1. **Clean Workspace:**
    ```bash
    cargo clean
@@ -180,12 +211,9 @@ We enforce strict role-based authorization:
    ```bash
    cargo test
    ```
-   *(On Windows systems, if you experience file lock conflicts with IDE background processes, run tests sequentially with target-dir separation)*:
-   ```bash
-   rustup run stable-x86_64-pc-windows-gnu cargo test --target i686-pc-windows-gnu --target-dir target/cli -j 1
-   ```
 
 ### Frontend Development
+
 1. **Navigate to Frontend:**
    ```bash
    cd frontend
@@ -206,7 +234,7 @@ We enforce strict role-based authorization:
 
 ---
 
-## 7. Stellar Testnet Deployment Guide
+## 🚀 7. Stellar Testnet Deployment Guide
 
 Follow these exact steps to compile and deploy the SeedChain syndicate to the **Stellar Testnet**:
 
@@ -214,7 +242,7 @@ Follow these exact steps to compile and deploy the SeedChain syndicate to the **
 Generate a deployment identity inside the Stellar CLI and request test tokens from the friendbot:
 ```bash
 # Generate key pair
-stellar keys generate deployer --network testnet
+stellar keys generate deployer --network testnet --fund
 
 # Get public key address
 stellar keys address deployer
@@ -222,23 +250,23 @@ stellar keys address deployer
 
 ### Step 2: Compile WASM Bytecodes
 ```bash
-cargo build --target wasm32-unknown-unknown --release
+stellar contract build
 ```
 
 ### Step 3: Install Bytecodes to Testnet
 Upload both WASM packages to the network. Take note of the resulting WASM hashes:
 ```bash
 # Upload Campaign contract
-stellar contract install --wasm ./target/wasm32-unknown-unknown/release/seedchain_campaign.wasm --source deployer --network testnet
+stellar contract install --wasm ./target/wasm32v1-none/release/seedchain_campaign.wasm --source deployer --network testnet
 
 # Upload Syndicate Registry contract
-stellar contract install --wasm ./target/wasm32-unknown-unknown/release/seedchain_syndicate.wasm --source deployer --network testnet
+stellar contract install --wasm ./target/wasm32v1-none/release/seedchain_syndicate.wasm --source deployer --network testnet
 ```
 
 ### Step 4: Deploy the Syndicate Registry
 Deploy the registry instance. Replace `<REGISTRY_WASM_HASH>` with the hash returned in the previous step:
 ```bash
-stellar contract deploy --wasm-hash <REGISTRY_WASM_HASH> --source deployer --network testnet --salt "seedchain_reg_salt_1"
+stellar contract deploy --wasm-hash <REGISTRY_WASM_HASH> --source deployer --network testnet --salt "0000000000000000000000000000000000000000000000000000000000000001"
 ```
 This returns the active **Registry Contract Address** (e.g., `CDRegistryAddress...`).
 
@@ -267,7 +295,7 @@ Create `frontend/src/contracts-metadata.json` and paste your deployed contract d
 
 ---
 
-## 8. Syndicate Configuration Log
+## 📋 8. Syndicate Configuration Log & Verification
 
 Update this log after your testnet deployment:
 
@@ -278,24 +306,24 @@ Update this log after your testnet deployment:
 | **USDC Testnet Token** | `Native / Test stablecoin compatibility` |
 | **Platform Administrator** | `GBEDWS2NFV5DO4Z44VRT4BCEJIFCURWPQFCQFFJRNLDB7GIOX2Y7RSBX` |
 
-### On-Chain Contract Verification
+### On-Chain Contract Verification Links
 All registry setup steps were executed on-chain via the `charlie` key pair. You can verify these operations on the Stellar Explorer:
-- **Contract Upload (SyndicateRegistry WASM):** [Tx 914bbb8e...](https://stellar.expert/explorer/testnet/tx/914bbb8e022f7524ece5283e3324a21cb4fa6d97d7dbb65f28f21c26f0e33038)
-- **Contract Deployment (SyndicateRegistry Instance):** [Tx 7ef33b0c...](https://stellar.expert/explorer/testnet/tx/7ef33b0c7ecee99481f010ac76e6e6f1da196d964d14527c5e5040486d71538b)
-- **Contract Call (Initialize Registry):** [Tx eaf01c6f...](https://stellar.expert/explorer/testnet/tx/eaf01c6f09b64a60d82f5ffa23e8b2aacb13234f7c42c07ea978254b4c739c7b)
-- **Contract Call (Configure Campaign WASM Hash):** [Tx a1e5d5d8...](https://stellar.expert/explorer/testnet/tx/a1e5d5d8cc6ffb22fac77ae2f71f61575c13f0a1493aed174dafb3a61f97d103)
+* **Contract Upload (SyndicateRegistry WASM):** [Tx 914bbb8e...](https://stellar.expert/explorer/testnet/tx/914bbb8e022f7524ece5283e3324a21cb4fa6d97d7dbb65f28f21c26f0e33038)
+* **Contract Deployment (SyndicateRegistry Instance):** [Tx 7ef33b0c...](https://stellar.expert/explorer/testnet/tx/7ef33b0c7ecee99481f010ac76e6e6f1da196d964d14527c5e5040486d71538b)
+* **Contract Call (Initialize Registry):** [Tx eaf01c6f...](https://stellar.expert/explorer/testnet/tx/eaf01c6f09b64a60d82f5ffa23e8b2aacb13234f7c42c07ea978254b4c739c7b)
+* **Contract Call (Configure Campaign WASM Hash):** [Tx a1e5d5d8...](https://stellar.expert/explorer/testnet/tx/a1e5d5d8cc6ffb22fac77ae2f71f61575c13f0a1493aed174dafb3a61f97d103)
 
 ---
 
-## 9. Security Considerations
+## 🛡️ 9. Security Considerations
+
 1. **Reentrancy Protection:** All token transfers (`transfer()`) are placed at the end of execution blocks after internal state updates (pledges cleared, milestones marked paid) to prevent reentrancy exploits.
 2. **Access Safeguards:** Sensitive operations (`claim_milestone_payout`, `request_milestone_payout`, `upgrade`) explicitly require administrative or target founder authorization.
 3. **State Rent Prevention:** `extend_ttl` is integrated across all read/write paths in persistent and instance storage to prevent state expiration.
 
-
 ---
 
-## 10. Transaction Screenshots
+## 📸 10. Transaction Screenshots
 
 Below are screenshots demonstrating successful XLM transactions on the Stellar Testnet:
 
