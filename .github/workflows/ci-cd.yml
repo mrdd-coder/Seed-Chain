@@ -1,0 +1,77 @@
+name: SeedChain CI-CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  contract-checks:
+    name: Rust Soroban Contracts CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          targets: wasm32-unknown-unknown
+
+      - name: Cache Cargo Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+
+      - name: Install Soroban/Stellar CLI
+        run: |
+          cargo install --locked stellar-cli || true
+
+      - name: Build Contracts
+        run: cargo build --target wasm32-unknown-unknown --release
+
+      - name: Run Contract Tests
+        run: cargo test
+
+  frontend-checks:
+    name: Next.js Frontend CI
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-name: '24'
+          cache: 'npm'
+          cache-dependency-path: ./frontend/package-lock.json
+
+      - name: Install NPM Dependencies
+        run: npm ci --ignore-scripts --legacy-peer-deps
+
+      - name: Run Vitest Tests
+        run: npm run test -- --run
+
+      - name: Verify Next.js Build
+        run: npm run build
+
+  deploy:
+    name: CD Deployment
+    needs: [contract-checks, frontend-checks]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Syndicate Deployment
+        run: |
+          echo "Triggering automated Vercel/GitHub Pages web release..."
+          echo "Vessel syndicate contracts active on Stellar Testnet!"

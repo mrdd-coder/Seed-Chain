@@ -1,0 +1,8 @@
+{
+  "network": "testnet",
+  "rpcUrl": "https://soroban-testnet.stellar.org",
+  "registryAddress": "CDRegistryAddressExample1234567890Testnet",
+  "campaignWasmHash": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+  "deployerAddress": "GDeployerAddressExample1234567890Testnet",
+  "timestamp": "2026-06-27 12:00:00"
+}

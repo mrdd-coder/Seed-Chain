@@ -1,0 +1,20 @@
+# Cargo / Rust build artifacts
+/target/
+
+# Node / NPM packages
+**/node_modules/
+
+# Next.js build output and caching
+/frontend/.next/
+/frontend/out/
+
+# Environment credentials
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Operating System files
+.DS_Store
+Thumbs.db
