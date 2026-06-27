@@ -273,10 +273,17 @@ Update this log after your testnet deployment:
 
 | Contract Component | Stellar Testnet Address / Hash |
 | --- | --- |
-| **SyndicateRegistry Contract** | `CDRegistryAddressExample1234567890Testnet` *(Fill after Step 4)* |
-| **ProjectCampaign WASM Hash** | `abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890` *(Fill after Step 3)* |
-| **USDC Testnet Token** | `GBF6J...` *(Native or test stablecoin address)* |
-| **Platform Administrator** | `GDeployerAddressExample1234567890Testnet` *(Fill after Step 1)* |
+| **SyndicateRegistry Contract** | `CBNRSQKD43UXRUQWEZHC46HITIAVZPKIO6U4TH6TCFLSOKCGHUXABLVU` |
+| **ProjectCampaign WASM Hash** | `6da2c33188a6ce9fa687b31f7b7e2a3b401624205abfd788eec29eeda20f13cf` |
+| **USDC Testnet Token** | `Native / Test stablecoin compatibility` |
+| **Platform Administrator** | `GBEDWS2NFV5DO4Z44VRT4BCEJIFCURWPQFCQFFJRNLDB7GIOX2Y7RSBX` |
+
+### On-Chain Contract Verification
+All registry setup steps were executed on-chain via the `charlie` key pair. You can verify these operations on the Stellar Explorer:
+- **Contract Upload (SyndicateRegistry WASM):** [Tx 914bbb8e...](https://stellar.expert/explorer/testnet/tx/914bbb8e022f7524ece5283e3324a21cb4fa6d97d7dbb65f28f21c26f0e33038)
+- **Contract Deployment (SyndicateRegistry Instance):** [Tx 7ef33b0c...](https://stellar.expert/explorer/testnet/tx/7ef33b0c7ecee99481f010ac76e6e6f1da196d964d14527c5e5040486d71538b)
+- **Contract Call (Initialize Registry):** [Tx eaf01c6f...](https://stellar.expert/explorer/testnet/tx/eaf01c6f09b64a60d82f5ffa23e8b2aacb13234f7c42c07ea978254b4c739c7b)
+- **Contract Call (Configure Campaign WASM Hash):** [Tx a1e5d5d8...](https://stellar.expert/explorer/testnet/tx/a1e5d5d8cc6ffb22fac77ae2f71f61575c13f0a1493aed174dafb3a61f97d103)
 
 ---
 

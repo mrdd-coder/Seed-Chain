@@ -1,8 +1,8 @@
-{
-  "network": "testnet",
-  "rpcUrl": "https://soroban-testnet.stellar.org",
-  "registryAddress": "CDRegistryAddressExample1234567890Testnet",
-  "campaignWasmHash": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
-  "deployerAddress": "GDeployerAddressExample1234567890Testnet",
-  "timestamp": "2026-06-27 12:00:00"
+﻿{
+    "registryAddress":  "CBNRSQKD43UXRUQWEZHC46HITIAVZPKIO6U4TH6TCFLSOKCGHUXABLVU",
+    "timestamp":  "2026-06-28 01:12:22",
+    "campaignWasmHash":  "6da2c33188a6ce9fa687b31f7b7e2a3b401624205abfd788eec29eeda20f13cf",
+    "network":  "testnet",
+    "rpcUrl":  "https://soroban-testnet.stellar.org",
+    "deployerAddress":  "GBEDWS2NFV5DO4Z44VRT4BCEJIFCURWPQFCQFFJRNLDB7GIOX2Y7RSBX"
 }
