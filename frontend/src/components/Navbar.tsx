@@ -13,34 +13,26 @@ export default function Navbar() {
   const { address, walletId, network, isConnected, connect, disconnect, setNetwork } = useWalletStore();
   const [mounted, setMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [kit, setKit] = useState<StellarWalletsKit | null>(null);
-
   // Avoid hydration mismatch by checking mounting state
   useEffect(() => {
     setMounted(true);
     // Initialize the StellarWalletsKit on mount
-    const walletKit = new StellarWalletsKit({
+    StellarWalletsKit.init({
       network: Networks.TESTNET,
       modules: [
         new FreighterModule(),
         new AlbedoModule(),
       ],
     });
-    setKit(walletKit);
   }, []);
 
   const handleConnectWallet = async (selectedWallet: 'freighter' | 'albedo') => {
-    if (!kit) return;
     try {
-      // Connect to the specific wallet
-      let connectedAddress = '';
-      if (selectedWallet === 'freighter') {
-        const { address } = await kit.getAddress();
-        connectedAddress = address;
-      } else {
-        const { address } = await kit.getAddress();
-        connectedAddress = address;
-      }
+      // Set the active wallet module
+      StellarWalletsKit.setWallet(selectedWallet);
+      
+      // Fetch the address from the wallet extension
+      const { address: connectedAddress } = await StellarWalletsKit.fetchAddress();
       
       connect(selectedWallet, connectedAddress);
       setIsModalOpen(false);
