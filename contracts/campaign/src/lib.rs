@@ -450,6 +450,9 @@ impl ProjectCampaign {
         // Clear pledge to prevent double spend
         env.storage().persistent().remove(&pledge_key);
 
+        // Deduct from TotalPledged to ensure subsequent calculations use the correct remaining pool weight
+        env.storage().instance().set(&DataKey::TotalPledged, &(total_pledged - pledge_amount));
+
         if refund_share > 0 {
             token_client.transfer(&env.current_contract_address(), &investor, &refund_share);
         }

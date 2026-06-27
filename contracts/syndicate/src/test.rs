@@ -1,8 +1,10 @@
 #![cfg(test)]
+extern crate std;
+
 use super::*;
 use soroban_sdk::{
-    testutils::{Address as _, Ledger},
-    Address, Env, BytesN, Vec
+    testutils::Address as _,
+    Address, Env,
 };
 
 #[test]
@@ -36,10 +38,10 @@ fn test_registry_initialization_and_fees() {
     // Verify only admin can set platform fees
     let non_admin = Address::generate(&env);
     // Setting fee from non-admin should fail the authorization check
-    let result = std::panic::catch_unwind(|| {
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let local_env = Env::default();
         let local_registry_client = SyndicateRegistryClient::new(&local_env, &registry_id);
         local_registry_client.set_platform_fee(&500, &non_admin);
-    });
+    }));
     assert!(result.is_err());
 }

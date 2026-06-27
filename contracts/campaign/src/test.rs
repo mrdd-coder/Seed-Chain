@@ -1,4 +1,6 @@
 #![cfg(test)]
+extern crate std;
+
 use super::*;
 use soroban_sdk::{
     testutils::{Address as _, Ledger},
@@ -15,16 +17,19 @@ fn test_campaign_success_and_milestone_release() {
     let investor_2 = Address::generate(&env);
 
     // Set ledger
-    env.ledger().set_sequence(10);
+    env.ledger().with_mut(|info| {
+        info.sequence_number = 10;
+    });
 
     // Deploy token contract
     let token_admin = Address::generate(&env);
     let token_addr = env.register_stellar_asset_contract(token_admin);
     let token_client = token::Client::new(&env, &token_addr);
+    let sac_client = token::StellarAssetClient::new(&env, &token_addr);
 
     // Mint tokens
-    token_client.mint(&investor_1, &600);
-    token_client.mint(&investor_2, &600);
+    sac_client.mint(&investor_1, &600);
+    sac_client.mint(&investor_2, &600);
 
     // Create Milestones
     let mut milestones = Vec::new(&env);
@@ -96,7 +101,8 @@ fn test_campaign_failure_and_withdraw() {
     let token_admin = Address::generate(&env);
     let token_addr = env.register_stellar_asset_contract(token_admin);
     let token_client = token::Client::new(&env, &token_addr);
-    token_client.mint(&investor, &500);
+    let sac_client = token::StellarAssetClient::new(&env, &token_addr);
+    sac_client.mint(&investor, &500);
 
     let mut milestones = Vec::new(&env);
     milestones.push_back(Milestone {
@@ -117,16 +123,20 @@ fn test_campaign_failure_and_withdraw() {
     campaign_client.pledge(&investor, &500);
 
     // Try to withdraw early (should fail)
-    env.ledger().set_sequence(50);
-    let result = std::panic::catch_unwind(|| {
+    env.ledger().with_mut(|info| {
+        info.sequence_number = 50;
+    });
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         let local_env = Env::default();
         let local_campaign_client = ProjectCampaignClient::new(&local_env, &campaign_id);
         local_campaign_client.withdraw(&investor);
-    });
+    }));
     assert!(result.is_err());
 
     // Advance sequence past deadline
-    env.ledger().set_sequence(101);
+    env.ledger().with_mut(|info| {
+        info.sequence_number = 101;
+    });
 
     // Withdraw succeeds now
     campaign_client.withdraw(&investor);
@@ -149,8 +159,9 @@ fn test_campaign_refund_trigger() {
     let token_admin = Address::generate(&env);
     let token_addr = env.register_stellar_asset_contract(token_admin);
     let token_client = token::Client::new(&env, &token_addr);
-    token_client.mint(&investor_1, &500);
-    token_client.mint(&investor_2, &500);
+    let sac_client = token::StellarAssetClient::new(&env, &token_addr);
+    sac_client.mint(&investor_1, &500);
+    sac_client.mint(&investor_2, &500);
 
     let mut milestones = Vec::new(&env);
     milestones.push_back(Milestone {
