@@ -4,7 +4,9 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useWalletStore, NetworkId } from '../state/wallet';
-import { StellarWalletsKit, WalletNetwork, FreighterModule, AlbedoModule } from '@creit.tech/stellar-wallets-kit';
+import { StellarWalletsKit, Networks } from '@creit.tech/stellar-wallets-kit';
+import { FreighterModule } from '@creit.tech/stellar-wallets-kit/modules/freighter';
+import { AlbedoModule } from '@creit.tech/stellar-wallets-kit/modules/albedo';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -18,7 +20,7 @@ export default function Navbar() {
     setMounted(true);
     // Initialize the StellarWalletsKit on mount
     const walletKit = new StellarWalletsKit({
-      network: WalletNetwork.TESTNET,
+      network: Networks.TESTNET,
       modules: [
         new FreighterModule(),
         new AlbedoModule(),
