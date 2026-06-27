@@ -284,3 +284,7 @@ Update this log after your testnet deployment:
 1. **Reentrancy Protection:** All token transfers (`transfer()`) are placed at the end of execution blocks after internal state updates (pledges cleared, milestones marked paid) to prevent reentrancy exploits.
 2. **Access Safeguards:** Sensitive operations (`claim_milestone_payout`, `request_milestone_payout`, `upgrade`) explicitly require administrative or target founder authorization.
 3. **State Rent Prevention:** `extend_ttl` is integrated across all read/write paths in persistent and instance storage to prevent state expiration.
+
+
+<img width="1920" height="1080" alt="Screenshot (447)" src="https://github.com/user-attachments/assets/56ba8e28-4ef4-49f2-8392-1c8f6833d668" />
+
