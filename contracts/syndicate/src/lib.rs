@@ -140,7 +140,7 @@ impl SyndicateRegistry {
         admin.require_auth();
         extend_instance_ttl(&env);
 
-        env.deployer().update_current_contract_wasm(new_wasm_hash);
+        env.deployer().update_current_contract_wasm(new_wasm_hash.clone());
         env.events().publish(
             (Symbol::new(&env, "contract_upgraded"),),
             new_wasm_hash,
