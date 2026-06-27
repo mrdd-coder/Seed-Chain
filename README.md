@@ -21,7 +21,68 @@ SeedChain introduces **Milestone Crowd Escrows** via Soroban smart contracts:
 
 ---
 
-## 2. Technical Architecture & Component Flow
+## 2. Directory Structure
+
+The project has been organized with a feature-based architecture separating smart contracts, deployment tools, and the Next.js frontend app:
+
+```
+SeedChain/
+├── .cargo/
+│   └── config.toml               # Cargo target linker overrides
+├── .github/
+│   └── workflows/
+│       └── ci-cd.yml             # GitHub Actions CI/CD pipeline
+├── contracts/
+│   ├── campaign/
+│   │   ├── src/
+│   │   │   ├── lib.rs            # ProjectCampaign contract source
+│   │   │   └── test.rs           # Campaign contract unit tests
+│   │   └── Cargo.toml            # Campaign contract configuration
+│   └── syndicate/
+│       ├── src/
+│       │   ├── lib.rs            # SyndicateRegistry contract source
+│       │   └── test.rs           # Syndicate registry unit tests
+│       └── Cargo.toml            # Syndicate contract configuration
+├── frontend/
+│   ├── src/
+│   │   ├── __tests__/
+│   │   │   └── frontend.test.tsx # Vitest frontend test suite
+│   │   ├── app/
+│   │   │   ├── activity/
+│   │   │   │   └── page.tsx      # Real-time event activity feed
+│   │   │   ├── analytics/
+│   │   │   │   └── page.tsx      # Recharts dashboard analytics
+│   │   │   ├── dashboard/
+│   │   │   │   └── page.tsx      # Campaign dashboard and investment panel
+│   │   │   ├── settings/
+│   │   │   │   └── page.tsx      # RPC and network configurations
+│   │   │   ├── transactions/
+│   │   │   │   └── page.tsx      # Transaction center and developer log console
+│   │   │   ├── globals.css       # Tailwind CSS v4 styling configurations
+│   │   │   ├── layout.tsx        # Next.js root layout loading google fonts
+│   │   │   └── page.tsx          # Marketing landing page
+│   │   ├── components/
+│   │   │   └── Navbar.tsx        # StellarWalletsKit navigation and wallet connect
+│   │   ├── services/
+│   │   │   └── stellar.ts        # Soroban RPC client and transaction helper
+│   │   ├── state/
+│   │   │   ├── transactions.ts   # Zustand transaction center store
+│   │   │   └── wallet.ts         # Zustand wallet and network store
+│   │   └── contracts-metadata.json # Default mockup contract configurations
+│   ├── package.json              # Next.js configurations
+│   ├── vitest.config.ts          # Vitest configurations
+│   └── vitest.setup.ts           # Vitest setup file loading jest-dom
+├── scripts/
+│   ├── deploy.ps1                # PowerShell Stellar testnet deployment automation
+│   └── deploy.sh                 # Bash shell testnet deployment automation
+├── .env.example                  # Environment configuration example
+├── Cargo.toml                    # Root workspace Cargo configuration
+└── README.md                     # Production README and user guide
+```
+
+---
+
+## 3. Technical Architecture & Component Flow
 
 ```mermaid
 graph TD
@@ -70,7 +131,7 @@ sequenceDiagram
 
 ---
 
-## 3. Smart Contract Design
+## 4. Smart Contract Design
 
 The contracts are built in Rust using the official **Soroban Rust SDK**:
 
@@ -87,7 +148,7 @@ We enforce strict role-based authorization:
 
 ---
 
-## 4. Technical Stack
+## 5. Technical Stack
 
 - **Smart Contracts:** Rust, Soroban SDK (v21.0.1)
 - **Frontend:** Next.js 15 (App Router), TypeScript, Tailwind CSS, shadcn/ui
@@ -98,7 +159,7 @@ We enforce strict role-based authorization:
 
 ---
 
-## 5. Local Development & Testing
+## 6. Local Development & Testing
 
 ### Prerequisites
 - Node.js (v20+ / v24 recommended)
@@ -145,7 +206,7 @@ We enforce strict role-based authorization:
 
 ---
 
-## 6. Stellar Testnet Deployment Guide
+## 7. Stellar Testnet Deployment Guide
 
 Follow these exact steps to compile and deploy the SeedChain syndicate to the **Stellar Testnet**:
 
@@ -206,7 +267,7 @@ Create `frontend/src/contracts-metadata.json` and paste your deployed contract d
 
 ---
 
-## 7. Syndicate Configuration Log
+## 8. Syndicate Configuration Log
 
 Update this log after your testnet deployment:
 
@@ -219,7 +280,7 @@ Update this log after your testnet deployment:
 
 ---
 
-## 8. Security Considerations
+## 9. Security Considerations
 1. **Reentrancy Protection:** All token transfers (`transfer()`) are placed at the end of execution blocks after internal state updates (pledges cleared, milestones marked paid) to prevent reentrancy exploits.
 2. **Access Safeguards:** Sensitive operations (`claim_milestone_payout`, `request_milestone_payout`, `upgrade`) explicitly require administrative or target founder authorization.
 3. **State Rent Prevention:** `extend_ttl` is integrated across all read/write paths in persistent and instance storage to prevent state expiration.
