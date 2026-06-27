@@ -327,8 +327,15 @@ All registry setup steps were executed on-chain via the `charlie` key pair. You 
 
 Below are screenshots demonstrating successful XLM transactions on the Stellar Testnet:
 
-### Transaction 1
-![Stellar Testnet Transaction Screenshot 1](https://github.com/user-attachments/assets/56ba8e28-4ef4-49f2-8392-1c8f6833d668)
-
-### Transaction 2
-![Stellar Testnet Transaction Screenshot 2](https://github.com/user-attachments/assets/d2974ba9-e44d-4571-af97-1a1be7ba7793)
+<table width="100%">
+  <tr>
+    <td width="50%" align="center" valign="top">
+      <h4>Transaction 1</h4>
+      <img src="https://github.com/user-attachments/assets/56ba8e28-4ef4-49f2-8392-1c8f6833d668" alt="Stellar Testnet Transaction 1" style="max-width: 100%; border-radius: 6px; border: 1px solid #e1e4e8;" />
+    </td>
+    <td width="50%" align="center" valign="top">
+      <h4>Transaction 2</h4>
+      <img src="https://github.com/user-attachments/assets/d2974ba9-e44d-4571-af97-1a1be7ba7793" alt="Stellar Testnet Transaction 2" style="max-width: 100%; border-radius: 6px; border: 1px solid #e1e4e8;" />
+    </td>
+  </tr>
+</table>
