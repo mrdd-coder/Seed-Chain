@@ -192,7 +192,7 @@ export default function Dashboard() {
       // Real execution
       // Parse inputs
       const saltBytes = Buffer.from(saltInput.padEnd(32, '0')).slice(0, 32);
-      const goalVal = BigInt(goalInput) * 10000000n; // 7 decimals standard
+      const goalVal = BigInt(goalInput) * BigInt(10000000); // 7 decimals standard
       const deadlineVal = Number(deadlineInput);
 
       // Structure milestones vector
@@ -204,7 +204,7 @@ export default function Dashboard() {
           new xdr.ScMapEntry({ key: xdr.ScVal.scvSymbol('amount_pct'), val: xdr.ScVal.scvU32(pct1) }),
           new xdr.ScMapEntry({ key: xdr.ScVal.scvSymbol('status'), val: xdr.ScVal.scvSymbol('Pending') }),
         ]),
-        xdr.ScMapEntry.fromJSON({ key: nativeToScVal('id'), val: nativeToScVal(2) }) as any // Alternative encode
+        (xdr.ScMapEntry as any).fromJSON({ key: nativeToScVal('id'), val: nativeToScVal(2) }) as any // Alternative encode
       ]);
 
       // Invoke call
@@ -224,7 +224,7 @@ export default function Dashboard() {
     const txId = Math.random().toString(36).substring(7);
     addTransaction({
       id: txId,
-      operation: `Pledge ${pledgeAmount} USDC to ${selectedCampaign.title || 'Campaign'}`,
+      operation: `Pledge ${pledgeAmount} USDC to Campaign ${selectedCampaign.address.substring(0, 8)}...`,
       status: 'pending',
     });
 

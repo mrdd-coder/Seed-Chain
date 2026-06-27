@@ -7,6 +7,7 @@ import {
   scValToNative,
   xdr,
   Address,
+  Account,
 } from '@stellar/stellar-sdk';
 import { useTransactionStore } from '../state/transactions';
 
@@ -41,7 +42,7 @@ export async function getCampaigns(rpcUrl: string, registryAddress: string): Pro
   
   // Call registry method `get_campaigns`
   const tx = new TransactionBuilder(
-    new rpc.Account('GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF', '0'),
+    new Account('GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF', '0'),
     {
       fee: '100',
       networkPassphrase: Networks.TESTNET,
@@ -53,7 +54,7 @@ export async function getCampaigns(rpcUrl: string, registryAddress: string): Pro
 
   const sim = await server.simulateTransaction(tx);
   if (rpc.Api.isSimulationSuccess(sim)) {
-    const resultVal = sim.result.retval;
+    const resultVal = sim.result!.retval;
     const array = scValToNative(resultVal) as string[];
     return array.map((addr) => addr.toString());
   }
@@ -68,7 +69,7 @@ export async function getCampaignInfo(rpcUrl: string, campaignAddress: string): 
   const contract = new Contract(campaignAddress);
 
   const tx = new TransactionBuilder(
-    new rpc.Account('GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF', '0'),
+    new Account('GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF', '0'),
     {
       fee: '100',
       networkPassphrase: Networks.TESTNET,
@@ -80,7 +81,7 @@ export async function getCampaignInfo(rpcUrl: string, campaignAddress: string): 
 
   const sim = await server.simulateTransaction(tx);
   if (rpc.Api.isSimulationSuccess(sim)) {
-    const result = scValToNative(sim.result.retval);
+    const result = scValToNative(sim.result!.retval);
     // Returns (founder, token, goal, deadline, total_pledged, is_closed, refund_active)
     return {
       founder: result[0].toString(),
@@ -104,7 +105,7 @@ export async function getCampaignMilestones(rpcUrl: string, campaignAddress: str
   const contract = new Contract(campaignAddress);
 
   const tx = new TransactionBuilder(
-    new rpc.Account('GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF', '0'),
+    new Account('GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF', '0'),
     {
       fee: '100',
       networkPassphrase: Networks.TESTNET,
@@ -116,7 +117,7 @@ export async function getCampaignMilestones(rpcUrl: string, campaignAddress: str
 
   const sim = await server.simulateTransaction(tx);
   if (rpc.Api.isSimulationSuccess(sim)) {
-    const result = scValToNative(sim.result.retval) as any[];
+    const result = scValToNative(sim.result!.retval) as any[];
     // Maps milestone structs from Rust contract
     // Struct: { id, description, amount_pct, status }
     // Rust enum mapping: MilestoneStatus is returned as object with variant keys
@@ -149,7 +150,7 @@ export async function getPledgeAmount(rpcUrl: string, campaignAddress: string, i
   const contract = new Contract(campaignAddress);
 
   const tx = new TransactionBuilder(
-    new rpc.Account('GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF', '0'),
+    new Account('GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF', '0'),
     {
       fee: '100',
       networkPassphrase: Networks.TESTNET,
@@ -161,7 +162,7 @@ export async function getPledgeAmount(rpcUrl: string, campaignAddress: string, i
 
   const sim = await server.simulateTransaction(tx);
   if (rpc.Api.isSimulationSuccess(sim)) {
-    return scValToNative(sim.result.retval).toString();
+    return scValToNative(sim.result!.retval).toString();
   }
   return '0';
 }
@@ -239,7 +240,7 @@ export async function executeContractCall(
 
     // 4. Assemble transaction with simulation results
     addConsoleLog('Assembling transaction footprints and resources...');
-    const assembledTx = server.assembleTransaction(tx, sim);
+    const assembledTx = (server as any).assembleTransaction(tx, sim);
 
     // 5. Sign transaction via Wallet Kit
     addConsoleLog('Requesting signature from wallet...');
@@ -253,9 +254,9 @@ export async function executeContractCall(
     const signedTx = TransactionBuilder.fromXDR(signedTxXdr, passphrase);
     const submission = await server.sendTransaction(signedTx);
 
-    if (submission.status === rpc.Api.SendTransactionStatus.ERROR) {
-      addConsoleLog(`Submission failed: ${submission.errorResultXdr}`);
-      throw new Error(`Submission failed: ${submission.errorResultXdr}`);
+    if (submission.status === 'ERROR') {
+      addConsoleLog(`Submission failed: ${submission.errorResult}`);
+      throw new Error(`Submission failed: ${submission.errorResult}`);
     }
 
     const txHash = submission.hash;
