@@ -988,7 +988,6 @@ dependencies = [
 name = "seedchain-syndicate"
 version = "0.1.0"
 dependencies = [
- "seedchain-campaign",
  "soroban-sdk",
 ]
 
