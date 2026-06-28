@@ -15,6 +15,21 @@ vi.mock('@stellar/stellar-sdk', () => ({
   Address: {
     fromString: vi.fn(),
   },
+  Contract: function() {
+    return {
+      call: vi.fn(),
+    };
+  },
+  TransactionBuilder: function() {
+    return {
+      addOperation: vi.fn().mockReturnThis(),
+      setTimeout: vi.fn().mockReturnThis(),
+      build: vi.fn().mockReturnValue({}),
+    };
+  },
+  Networks: {
+    TESTNET: 'TESTNET',
+  },
   xdr: {
     ScVal: {
       scvVec: vi.fn(),
@@ -30,7 +45,11 @@ vi.mock('@stellar/stellar-sdk', () => ({
     Server: function() {
       return {
         getLedgers: vi.fn(),
+        simulateTransaction: vi.fn().mockRejectedValue(new Error("Simulated network failure")),
       };
+    },
+    Api: {
+      isSimulationSuccess: vi.fn().mockReturnValue(false),
     },
   },
 }));
@@ -60,6 +79,7 @@ describe('Dashboard Component UI', () => {
   beforeEach(() => {
     // Connect the wallet by default for interactive controls testing
     useWalletStore.getState().connect('freighter', 'GFounderAddressExample123456789');
+    window.alert = vi.fn();
   });
 
   it('should render simplified UI by default', () => {
@@ -115,5 +135,18 @@ describe('Dashboard Component UI', () => {
     
     // Submit button should have simplified text
     expect(screen.getByRole('button', { name: /Launch Project Campaign/i })).toBeInTheDocument();
+  });
+
+  it('should render Request Payout button for pending milestones if user is founder/sandbox', async () => {
+    render(<Dashboard />);
+    
+    // Select SolarGrid Protocol to open its details (wait for it to load from simulator fallback)
+    const campaignCard = await screen.findByText('SolarGrid Protocol');
+    fireEvent.click(campaignCard);
+    
+    // SolarGrid has Milestone 2 as Pending (since Milestone 1 is Paid)
+    // Because it is a simulated campaign, the user should be treated as a founder and see "Request Payout"
+    const requestButtons = await screen.findAllByRole('button', { name: /Request Payout/i });
+    expect(requestButtons.length).toBeGreaterThan(0);
   });
 });

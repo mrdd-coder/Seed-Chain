@@ -288,6 +288,59 @@ export default function Dashboard() {
     }
   };
 
+  const handleRequestPayout = async (milestoneId: number) => {
+    if (!selectedCampaign || !address) return;
+    const txId = Math.random().toString(36).substring(7);
+    addTransaction({
+      id: txId,
+      operation: `Request Payout for Milestone ${milestoneId}`,
+      status: 'pending',
+    });
+
+    try {
+      if (selectedCampaign.address.startsWith('CCampaign')) {
+        addConsoleLog(`[SIMULATION] Requesting payout for Milestone ${milestoneId}...`);
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        // Update local milestones state
+        const msList = milestones.map(m => {
+          if (m.id === milestoneId) {
+            return { ...m, status: 'PayoutRequested' as any };
+          }
+          return m;
+        });
+
+        setLocalMilestones({ ...localMilestones, [selectedCampaign.address]: msList });
+        setMilestones(msList);
+
+        addConsoleLog('[SIMULATION] Payout request successfully submitted!');
+        useTransactionStore.getState().updateTransaction(txId, { status: 'success' });
+        alert('Payout request submitted successfully!');
+      } else {
+        addConsoleLog(`Requesting payout on-chain for Milestone ${milestoneId}...`);
+        
+        const { StellarWalletsKit } = await import('@creit.tech/stellar-wallets-kit');
+        await executeContractCall(
+          StellarWalletsKit,
+          rpcUrl,
+          network,
+          address,
+          selectedCampaign.address,
+          'request_milestone_payout',
+          [nativeToScVal(milestoneId)],
+          `Request Milestone ${milestoneId} Payout`,
+          txId
+        );
+        
+        // Reload details
+        handleSelectCampaign(selectedCampaign);
+      }
+    } catch (err: any) {
+      useTransactionStore.getState().updateTransaction(txId, { status: 'failed', error: err.message });
+      alert(err.message);
+    }
+  };
+
   const handleTriggerRefundVote = async () => {
     if (!selectedCampaign || !address) return;
     const txId = Math.random().toString(36).substring(7);
@@ -661,51 +714,69 @@ export default function Dashboard() {
                       {milestones.length === 0 ? (
                         <div className="text-slate-500 text-sm py-4">No milestones registered.</div>
                       ) : (
-                        milestones.map((m, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-start gap-4 p-4 border border-slate-150 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900/60"
-                          >
-                            <div className="h-6 w-6 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-300">
-                              {m.id}
-                            </div>
-                            <div className="flex-1 space-y-1 text-left">
-                              <div className="flex justify-between items-center">
-                                <h4 className="font-bold text-sm text-slate-900 dark:text-white">{m.description}</h4>
-                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
-                                  m.status === 'Paid'
-                                    ? 'bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-950/20'
-                                    : m.status === 'PayoutRequested'
-                                    ? 'bg-amber-50 border-amber-200 text-amber-600 dark:bg-amber-950/20'
-                                    : 'bg-slate-100 border-slate-200 text-slate-400'
-                                }`}>
-                                  {m.status}
-                                </span>
+                        milestones.map((m, idx) => {
+                          const isFounder = isConnected && address && (
+                            address.toLowerCase() === selectedCampaign.founder.toLowerCase() || 
+                            selectedCampaign.address.startsWith('CCampaign')
+                          );
+                          return (
+                            <div
+                              key={idx}
+                              className="flex items-start gap-4 p-4 border border-slate-150 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900/60"
+                            >
+                              <div className="h-6 w-6 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-300">
+                                {m.id}
                               </div>
-                              <p className="text-xs text-slate-500">
-                                Unlocks {m.amount_pct}% of total fund ({(Number(selectedCampaign.totalPledged) * m.amount_pct) / 100} USDC)
-                              </p>
-
-                              {/* Voting actions for active investors */}
-                              {m.status === 'PayoutRequested' && isConnected && Number(userPledge) > 0 && (
-                                <div className="flex items-center gap-2 pt-2">
-                                  <button
-                                    onClick={() => handleVote(m.id, true)}
-                                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
-                                  >
-                                    Approve Payout
-                                  </button>
-                                  <button
-                                    onClick={() => handleVote(m.id, false)}
-                                    className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
-                                  >
-                                    Reject Payout
-                                  </button>
+                              <div className="flex-1 space-y-1 text-left">
+                                <div className="flex justify-between items-center">
+                                  <h4 className="font-bold text-sm text-slate-900 dark:text-white">{m.description}</h4>
+                                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
+                                    m.status === 'Paid'
+                                      ? 'bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-950/20'
+                                      : m.status === 'PayoutRequested'
+                                      ? 'bg-amber-50 border-amber-200 text-amber-600 dark:bg-amber-950/20'
+                                      : 'bg-slate-100 border-slate-200 text-slate-400'
+                                  }`}>
+                                    {m.status}
+                                  </span>
                                 </div>
-                              )}
+                                <p className="text-xs text-slate-500">
+                                  Unlocks {m.amount_pct}% of total fund ({(Number(selectedCampaign.totalPledged) * m.amount_pct) / 100} USDC)
+                                </p>
+
+                                {/* Request payout actions for founder */}
+                                {m.status === 'Pending' && isFounder && (
+                                  <div className="flex items-center gap-2 pt-2">
+                                    <button
+                                      onClick={() => handleRequestPayout(m.id)}
+                                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
+                                    >
+                                      Request Payout
+                                    </button>
+                                  </div>
+                                )}
+
+                                {/* Voting actions for active investors */}
+                                {m.status === 'PayoutRequested' && isConnected && Number(userPledge) > 0 && (
+                                  <div className="flex items-center gap-2 pt-2">
+                                    <button
+                                      onClick={() => handleVote(m.id, true)}
+                                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
+                                    >
+                                      Approve Payout
+                                    </button>
+                                    <button
+                                      onClick={() => handleVote(m.id, false)}
+                                      className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
+                                    >
+                                      Reject Payout
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        ))
+                          );
+                        })
                       )}
                     </div>
                   </div>
