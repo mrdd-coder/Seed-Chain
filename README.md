@@ -358,6 +358,9 @@ All registry setup steps were executed on-chain via the `charlie` key pair. You 
 
 ## 📷 Project Media & Screenshots
 
+### Desktop Web Application Interface
+*[INSERT YOUR SCREENSHOT OF THE DESKTOP HOMEPAGE / DASHBOARD INTERFACE HERE]*
+
 ### Deployed Testnet Transactions
 <table width="100%">
   <tr>
