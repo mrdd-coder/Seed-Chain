@@ -130,23 +130,51 @@ SeedChain/
 
 ## 📐 4. Technical Architecture & Component Flow
 
+### 1. System Component Architecture
+SeedChain uses a modern Next.js multi-route architecture separated by domain concerns. User requests are handled by specific pages that synchronize with Zustand stores for Freighter/Albedo wallet sessions and RPC event logs.
+
 ```mermaid
 graph TD
-    User[Founder/Investor] <--> Frontend[Next.js App / TS / Tailwind]
-    Frontend <--> StellarWalletsKit[Stellar Wallets Kit SDK]
-    StellarWalletsKit <--> RPC[Stellar RPC Network]
+    User[Founder / Backer] <--> Routing[Next.js App Router]
     
-    subgraph Soroban Smart Contracts
-        Registry[SyndicateRegistry Contract] -- Factory Deploys --> Campaign[ProjectCampaign Contract]
-        Campaign -- Pledges & Payouts --> SAC[Stellar Asset Contract - Token]
+    subgraph Frontend Pages
+        Routing <--> PageDash["/dashboard (Portfolio Overview)"]
+        Routing <--> PageCamp["/campaigns (Explore & Launch)"]
+        Routing <--> PageTx["/transactions (Tx Center & Send XLM)"]
+        Routing <--> PageSet["/settings (Registry Config & RPC)"]
+        Routing <--> PageAct["/activity (Live Event Timeline)"]
     end
     
-    RPC <--> Registry
-    RPC <--> Campaign
+    PageDash & PageCamp & PageTx & PageSet & PageAct <--> Stores[Zustand Stores: Wallet, Transactions]
+    Stores <--> Kit[Stellar Wallets Kit: Freighter & Albedo]
+    Stores <--> Client[Soroban RPC & Horizon API]
+    
+    subgraph Soroban Smart Contracts
+        Client <--> Registry[SyndicateRegistry Factory]
+        Registry -- Deploys Campaign Instance --> Campaign[ProjectCampaign Escrow]
+        Campaign -- Lock & Transfer USDC --> SAC[Stellar Asset Contract]
+    end
 ```
 
-### Inter-Contract Communication Flow
+### 2. Escrow Campaign Lifecycle State Transitions
+Syndicate campaign escrows transition through deterministic states governed on-chain by investor voting and deadline blocks:
 
+```mermaid
+stateDiagram-v2
+    [*] --> Active: Deployed via Registry
+    Active --> FundingOpen: Funding period active
+    FundingOpen --> GoalMet: Goal reached before deadline
+    FundingOpen --> RefundActive: Goal NOT met by deadline
+    GoalMet --> PayoutRequested: Founder requests Milestone payout
+    PayoutRequested --> MilestonePaid: >50% backer approval vote
+    PayoutRequested --> RefundActive: Milestone rejected & Refund Vote passed
+    MilestonePaid --> GoalMet: Further Milestones remaining
+    MilestonePaid --> [*]: All Milestones paid (Escrow Finished)
+    RefundActive --> BackerRefunded: Backers claim remaining unreleased USDC
+    BackerRefunded --> [*]: Escrow terminated
+```
+
+### 3. Inter-Contract Communication Flow
 The platform relies on contract-to-contract calls. The `SyndicateRegistry` installs the `ProjectCampaign` WASM and dynamically instantiates campaigns deterministically based on salt, then initializes them:
 
 ```mermaid
