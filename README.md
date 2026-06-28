@@ -382,4 +382,8 @@ All registry setup steps were executed on-chain via the `charlie` key pair. You 
 <img width="821" height="253" alt="Screenshot 2026-06-28 195128 - Copy" src="https://github.com/user-attachments/assets/792515b7-dc27-420b-aeaa-be97867b8236" />
 
 ### Test Output (Passing Rust & Frontend Vitest tests)
-*[INSERT YOUR SCREENSHOT OF CARGO TEST AND VITEST PASSED OUTPUT TERMINALS HERE]*
+<img width="623" height="235" alt="image" src="https://github.com/user-attachments/assets/0a1cb4d8-88fe-40b1-937f-154c020feaa1" />
+<img width="933" height="113" alt="image" src="https://github.com/user-attachments/assets/5a0e5507-00ad-4371-b1c4-e9701f4c5bc3" />
+
+
+
