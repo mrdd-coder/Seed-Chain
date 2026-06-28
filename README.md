@@ -363,11 +363,11 @@ All registry setup steps were executed on-chain via the `charlie` key pair. You 
   <tr>
     <td width="50%" align="center" valign="top">
       <h4>Transaction 1</h4>
-      <img src="./docs/images/tx1.png" alt="Stellar Testnet Transaction 1" style="max-width: 100%; border-radius: 6px; border: 1px solid #e1e4e8;" />
+      <img width="1920" height="1080" alt="Screenshot (447)" src="https://github.com/user-attachments/assets/86b2ed11-4cf4-4feb-97a0-61a31b8e4815" />
     </td>
     <td width="50%" align="center" valign="top">
       <h4>Transaction 2</h4>
-      <img src="./docs/images/tx2.png" alt="Stellar Testnet Transaction 2" style="max-width: 100%; border-radius: 6px; border: 1px solid #e1e4e8;" />
+      <img width="1920" height="1080" alt="Screenshot (448)" src="https://github.com/user-attachments/assets/c713ee2c-dbaa-450f-96da-80a46691959e" />
     </td>
   </tr>
 </table>
@@ -379,7 +379,7 @@ All registry setup steps were executed on-chain via the `charlie` key pair. You 
 *[INSERT YOUR SCREENSHOT OF MOBILE RESPONSIVE DASHBOARD LAYOUT HERE]*
 
 ### CI/CD Pipeline Running (GitHub Actions Checks)
-*[INSERT YOUR SCREENSHOT OF THE GITHUB ACTIONS TAB SHOWING PASSING RUN CHECKS HERE]*
+<img width="821" height="253" alt="Screenshot 2026-06-28 195128 - Copy" src="https://github.com/user-attachments/assets/792515b7-dc27-420b-aeaa-be97867b8236" />
 
 ### Test Output (Passing Rust & Frontend Vitest tests)
 *[INSERT YOUR SCREENSHOT OF CARGO TEST AND VITEST PASSED OUTPUT TERMINALS HERE]*
