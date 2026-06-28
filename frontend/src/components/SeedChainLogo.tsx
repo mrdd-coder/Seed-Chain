@@ -16,60 +16,94 @@ export default function SeedChainLogo({ size = 32, className = '' }: SeedChainLo
       className={className}
     >
       <defs>
-        <linearGradient id="seedchain-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#6366f1" />
-          <stop offset="100%" stopColor="#8b5cf6" />
+        <linearGradient id="sc-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#4f46e5" />
+          <stop offset="50%" stopColor="#7c3aed" />
+          <stop offset="100%" stopColor="#6d28d9" />
         </linearGradient>
-        <linearGradient id="seedchain-leaf" x1="24" y1="8" x2="44" y2="32" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#34d399" />
-          <stop offset="100%" stopColor="#10b981" />
+        <linearGradient id="sc-glow" x1="32" y1="0" x2="32" y2="64" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="white" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="white" stopOpacity="0" />
         </linearGradient>
-        <linearGradient id="seedchain-stem" x1="32" y1="20" x2="32" y2="52" gradientUnits="userSpaceOnUse">
+        <linearGradient id="sc-leaf" x1="20" y1="8" x2="44" y2="36" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#34d399" />
           <stop offset="100%" stopColor="#059669" />
         </linearGradient>
+        <linearGradient id="sc-chain" x1="10" y1="44" x2="54" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#818cf8" stopOpacity="0.6" />
+          <stop offset="50%" stopColor="#c4b5fd" />
+          <stop offset="100%" stopColor="#818cf8" stopOpacity="0.6" />
+        </linearGradient>
       </defs>
 
-      {/* Rounded square background */}
-      <rect x="0" y="0" width="64" height="64" rx="14" fill="url(#seedchain-bg)" />
+      {/* Background — rounded hex-ish square */}
+      <rect x="0" y="0" width="64" height="64" rx="16" fill="url(#sc-bg)" />
+      <rect x="0" y="0" width="64" height="64" rx="16" fill="url(#sc-glow)" />
 
-      {/* Stem - grows upward from seed */}
+      {/* ── SEED ELEMENT ── */}
+      {/* Seed body — teardrop / almond shape */}
       <path
-        d="M32 50 C32 50 32 36 32 28"
-        stroke="url(#seedchain-stem)"
-        strokeWidth="3"
+        d="M32 42 C28 40 24 36 24 30 C24 24 28 20 32 18 C36 20 40 24 40 30 C40 36 36 40 32 42Z"
+        fill="white"
+        opacity="0.95"
+      />
+      {/* Inner seed vein */}
+      <path
+        d="M32 20 L32 40"
+        stroke="url(#sc-bg)"
+        strokeWidth="1.2"
         strokeLinecap="round"
+        opacity="0.4"
+      />
+      <path
+        d="M32 26 L27 30"
+        stroke="url(#sc-bg)"
+        strokeWidth="1"
+        strokeLinecap="round"
+        opacity="0.3"
+      />
+      <path
+        d="M32 30 L37 34"
+        stroke="url(#sc-bg)"
+        strokeWidth="1"
+        strokeLinecap="round"
+        opacity="0.3"
+      />
+
+      {/* Sprout leaves emerging from top of seed */}
+      <path
+        d="M32 18 C30 14 24 10 20 9 C22 14 27 16 32 18"
+        fill="url(#sc-leaf)"
+        opacity="0.95"
+      />
+      <path
+        d="M32 18 C34 14 40 10 44 9 C42 14 37 16 32 18"
+        fill="url(#sc-leaf)"
+        opacity="0.85"
+      />
+
+      {/* ── CHAIN LINKS ── */}
+      {/* Left chain link — rounded rectangle outline */}
+      <rect
+        x="6" y="39" width="14" height="10" rx="5"
         fill="none"
+        stroke="url(#sc-chain)"
+        strokeWidth="2.2"
       />
-
-      {/* Left leaf */}
-      <path
-        d="M32 32 C28 28 18 26 16 20 C22 20 30 22 32 28"
-        fill="url(#seedchain-leaf)"
-        opacity="0.9"
+      {/* Right chain link — rounded rectangle outline */}
+      <rect
+        x="44" y="39" width="14" height="10" rx="5"
+        fill="none"
+        stroke="url(#sc-chain)"
+        strokeWidth="2.2"
       />
+      {/* Center connecting bars into seed */}
+      <line x1="20" y1="44" x2="26" y2="44" stroke="url(#sc-chain)" strokeWidth="2.2" strokeLinecap="round" />
+      <line x1="38" y1="44" x2="44" y2="44" stroke="url(#sc-chain)" strokeWidth="2.2" strokeLinecap="round" />
 
-      {/* Right leaf (main, larger) */}
-      <path
-        d="M32 26 C36 22 44 18 48 14 C46 22 38 26 32 26"
-        fill="url(#seedchain-leaf)"
-      />
-
-      {/* Seed at the base */}
-      <ellipse cx="32" cy="50" rx="6" ry="4.5" fill="white" opacity="0.95" />
-      <ellipse cx="32" cy="50" rx="4" ry="3" fill="url(#seedchain-bg)" opacity="0.4" />
-
-      {/* Chain link dots — representing blockchain */}
-      <circle cx="14" cy="50" r="2.5" fill="white" opacity="0.5" />
-      <circle cx="22" cy="50" r="2" fill="white" opacity="0.35" />
-      <circle cx="42" cy="50" r="2" fill="white" opacity="0.35" />
-      <circle cx="50" cy="50" r="2.5" fill="white" opacity="0.5" />
-
-      {/* Thin chain lines connecting the dots */}
-      <line x1="16.5" y1="50" x2="22" y2="50" stroke="white" strokeWidth="1" opacity="0.3" />
-      <line x1="24" y1="50" x2="28" y2="50" stroke="white" strokeWidth="1" opacity="0.3" />
-      <line x1="38" y1="50" x2="42" y2="50" stroke="white" strokeWidth="1" opacity="0.3" />
-      <line x1="44" y1="50" x2="50" y2="50" stroke="white" strokeWidth="1" opacity="0.3" />
+      {/* Small node dots at chain ends */}
+      <circle cx="9" cy="44" r="1.5" fill="#c4b5fd" opacity="0.8" />
+      <circle cx="55" cy="44" r="1.5" fill="#c4b5fd" opacity="0.8" />
     </svg>
   );
 }
