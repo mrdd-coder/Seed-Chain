@@ -4,7 +4,7 @@ SeedChain is a decentralized crowdfunding and startup investment syndicate platf
 
 ---
 
-## 🔗 Submission References (Level 3 Submission)
+## 🔗 Project Links
 
 * **GitHub Repository:** [mrdd-coder/Seed-Chain](https://github.com/mrdd-coder/Seed-Chain)
 * **Live Demo URL:** *[INSERT YOUR LIVE DEMO LINK HERE (Vercel/Netlify)]*
@@ -139,9 +139,9 @@ npm run dev
 
 ---
 
-## 📷 Submission Media & Proof (Level 3 Verification)
+## 📷 Project Media & Screenshots
 
-### Deployed Testnet Transactions (from level 2)
+### Deployed Testnet Transactions
 <table width="100%">
   <tr>
     <td width="50%" align="center" valign="top">
