@@ -72,9 +72,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative py-20 lg:py-28 overflow-hidden z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/5 text-indigo-400 border border-indigo-500/20 mb-6">
-            🎉 Soroban Level 3 Investment Syndicate Live on Testnet
-          </span>
+
           <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-none max-w-4xl mx-auto">
             Decentralized Startup Funding with <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-400">On-Chain Escrows</span>
           </h1>
@@ -229,7 +227,7 @@ export default function Home() {
             Seed<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-400 font-extrabold">Chain</span>
           </div>
           <p className="text-sm max-w-md mx-auto text-slate-400">
-            A production-ready Soroban level 3 syndicate investment platform built on the Stellar network. Secure escrows for modern startup crowdfunding.
+            A decentralized investment platform with milestone-based escrows. Secure, transparent crowdfunding for modern startups.
           </p>
           <div className="text-xs text-slate-600">
             &copy; {new Date().getFullYear()} SeedChain Inc. All rights reserved.
