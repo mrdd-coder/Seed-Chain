@@ -1,57 +1,12 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import Dashboard from '../app/dashboard/page';
 import { useWalletStore } from '../state/wallet';
 
 // Mock next/navigation
 vi.mock('next/navigation', () => ({
   usePathname: () => '/dashboard',
-}));
-
-// Mock @stellar/stellar-sdk and other services to avoid actual API calls
-vi.mock('@stellar/stellar-sdk', () => ({
-  nativeToScVal: vi.fn(),
-  Address: {
-    fromString: vi.fn(),
-  },
-  Contract: function() {
-    return {
-      call: vi.fn(),
-    };
-  },
-  TransactionBuilder: function() {
-    return {
-      addOperation: vi.fn().mockReturnThis(),
-      setTimeout: vi.fn().mockReturnThis(),
-      build: vi.fn().mockReturnValue({}),
-    };
-  },
-  Networks: {
-    TESTNET: 'TESTNET',
-  },
-  xdr: {
-    ScVal: {
-      scvVec: vi.fn(),
-      scvMap: vi.fn(),
-      scvSymbol: vi.fn(),
-      scvString: vi.fn(),
-      scvU32: vi.fn(),
-    },
-    ScMapEntry: vi.fn(),
-  },
-  Account: vi.fn(),
-  rpc: {
-    Server: function() {
-      return {
-        getLedgers: vi.fn(),
-        simulateTransaction: vi.fn().mockRejectedValue(new Error("Simulated network failure")),
-      };
-    },
-    Api: {
-      isSimulationSuccess: vi.fn().mockReturnValue(false),
-    },
-  },
 }));
 
 // Mock stellar-wallets-kit and submodules to prevent loading commonjs freighter-api
@@ -75,78 +30,38 @@ vi.mock('@creit.tech/stellar-wallets-kit/modules/albedo', () => ({
   AlbedoModule: vi.fn(),
 }));
 
-describe('Dashboard Component UI', () => {
+describe('Personal Dashboard Component UI', () => {
   beforeEach(() => {
-    // Connect the wallet by default for interactive controls testing
+    // Connect the wallet by default
     useWalletStore.getState().connect('freighter', 'GFounderAddressExample123456789');
-    window.alert = vi.fn();
   });
 
-  it('should render simplified UI by default', () => {
+  it('should render welcome back banner and connected address info', () => {
     render(<Dashboard />);
-    
-    // The main tabs should be present
-    expect(screen.getByText('Browse Campaigns')).toBeInTheDocument();
-    expect(screen.getByText('Launch Campaign')).toBeInTheDocument();
-    
-    // Advanced developer settings should be collapsed and invisible by default
-    expect(screen.queryByPlaceholderText('Registry Address')).not.toBeInTheDocument();
+    expect(screen.getByText('Welcome back')).toBeInTheDocument();
+    expect(screen.getByText(/Connected as GFound...6789/i)).toBeInTheDocument();
   });
 
-  it('should show Registry Address inputs when Advanced Settings toggle is clicked', async () => {
+  it('should render portfolio stats widgets', () => {
     render(<Dashboard />);
-    
-    const toggleButton = screen.getByText(/Advanced Developer Settings/i);
-    expect(toggleButton).toBeInTheDocument();
-    
-    // Click toggle to expand
-    fireEvent.click(toggleButton);
-    
-    // Now Registry Address input and Reload button should be visible
-    expect(screen.getByPlaceholderText('Registry Address')).toBeInTheDocument();
-    expect(screen.getByText('Reload')).toBeInTheDocument();
-    
-    // Click toggle again to collapse
-    fireEvent.click(toggleButton);
-    expect(screen.queryByPlaceholderText('Registry Address')).not.toBeInTheDocument();
+    expect(screen.getByText('Total Invested')).toBeInTheDocument();
+    expect(screen.getByText('7,000 USDC')).toBeInTheDocument();
+    expect(screen.getByText('Active Campaigns')).toBeInTheDocument();
+    expect(screen.getByText('Pending Milestones')).toBeInTheDocument();
   });
 
-  it('should simplify Campaign Launch Form and support Advanced settings collapsible toggle', () => {
+  it('should render your active investments list', () => {
     render(<Dashboard />);
-    
-    const launchTabButton = screen.getByText('Launch Campaign');
-    fireEvent.click(launchTabButton);
-    
-    // Goal should be visible directly
-    expect(screen.getByText('Funding Goal (USDC)')).toBeInTheDocument();
-    
-    // Salt, Deadline, Asset Address should be hidden by default
-    expect(screen.queryByText('Unique Deployment Salt')).not.toBeInTheDocument();
-    expect(screen.queryByText('Deadline (Ledgers, e.g. 10000)')).not.toBeInTheDocument();
-    
-    // Find and click the advanced toggle inside campaign form
-    const formAdvancedToggle = screen.getByText(/Advanced Settings \(optional\)/i);
-    fireEvent.click(formAdvancedToggle);
-    
-    // Now they should be visible
-    expect(screen.getByText('Unique Deployment Salt')).toBeInTheDocument();
-    expect(screen.getByText('Deadline (Ledgers, e.g. 10000)')).toBeInTheDocument();
-    expect(screen.getByText('Payment Asset Address')).toBeInTheDocument();
-    
-    // Submit button should have simplified text
-    expect(screen.getByRole('button', { name: /Launch Project Campaign/i })).toBeInTheDocument();
+    expect(screen.getAllByText('SolarGrid Protocol')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('StellarPay Mobile')[0]).toBeInTheDocument();
+    expect(screen.getByText('1 of 2 paid')).toBeInTheDocument();
+    expect(screen.getByText('Payout requested')).toBeInTheDocument();
   });
 
-  it('should render Request Payout button for pending milestones if user is founder/sandbox', async () => {
+  it('should render quick action buttons and links', () => {
     render(<Dashboard />);
-    
-    // Select SolarGrid Protocol to open its details (wait for it to load from simulator fallback)
-    const campaignCard = await screen.findByText('SolarGrid Protocol');
-    fireEvent.click(campaignCard);
-    
-    // SolarGrid has Milestone 2 as Pending (since Milestone 1 is Paid)
-    // Because it is a simulated campaign, the user should be treated as a founder and see "Request Payout"
-    const requestButtons = await screen.findAllByRole('button', { name: /Request Payout/i });
-    expect(requestButtons.length).toBeGreaterThan(0);
+    expect(screen.getByText('Explore Campaigns')).toBeInTheDocument();
+    expect(screen.getByText('Launch a Campaign')).toBeInTheDocument();
+    expect(screen.getAllByText('How It Works')[0]).toBeInTheDocument();
   });
 });

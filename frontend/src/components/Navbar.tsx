@@ -76,10 +76,12 @@ export default function Navbar() {
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/dashboard', label: 'Dashboard' },
+    { href: '/campaigns', label: 'Campaigns' },
     { href: '/activity', label: 'Live Activity' },
     { href: '/transactions', label: 'Tx Center' },
     { href: '/analytics', label: 'Analytics' },
     { href: '/settings', label: 'Settings' },
+    { href: '/how-it-works', label: 'How It Works' },
   ];
 
   if (!mounted) return null;

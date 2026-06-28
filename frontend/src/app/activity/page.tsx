@@ -107,15 +107,15 @@ export default function ActivityFeed() {
   const getEventStyle = (type: ActivityEvent['type']) => {
     switch (type) {
       case 'pledge':
-        return 'bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-900 text-blue-600 dark:text-blue-400';
+        return 'bg-indigo-500/10 border-indigo-500/25 text-indigo-400';
       case 'milestone_requested':
-        return 'bg-amber-50 border-amber-200 dark:bg-amber-950/20 dark:border-amber-900 text-amber-600 dark:text-amber-400';
+        return 'bg-amber-500/10 border-amber-500/25 text-amber-400';
       case 'milestone_voted':
-        return 'bg-indigo-50 border-indigo-200 dark:bg-indigo-950/20 dark:border-indigo-900 text-indigo-600 dark:text-indigo-400';
+        return 'bg-violet-500/10 border-violet-500/25 text-violet-400';
       case 'milestone_paid':
-        return 'bg-emerald-50 border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-900 text-emerald-600 dark:text-emerald-400';
+        return 'bg-indigo-500/20 border-indigo-500/40 text-indigo-400';
       default:
-        return 'bg-red-50 border-red-200 dark:bg-red-950/20 dark:border-red-900 text-red-600 dark:text-red-400';
+        return 'bg-red-500/10 border-red-500/25 text-red-400';
     }
   };
 
@@ -130,25 +130,29 @@ export default function ActivityFeed() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-800 dark:text-slate-200 transition-colors">
+    <div className="relative min-h-screen bg-[#030712] text-slate-200 transition-colors overflow-hidden">
+      {/* Ambient spotlights */}
+      <div className="spotlight-purple -top-40 -left-40" />
+      <div className="spotlight-cyan top-[500px] -right-40" />
+
       <Navbar />
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-5 mb-8 gap-4">
+      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-5 mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Live Activity Feed</h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            <h1 className="text-3xl font-extrabold text-white">Live Activity Feed</h1>
+            <p className="text-sm text-slate-400 mt-1">
               Real-time syndicate events, pledges, governance voting, and disbursements on Stellar.
             </p>
           </div>
 
-          <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800 max-w-fit self-start sm:self-center">
+          <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 max-w-fit self-start sm:self-center">
             <button
               onClick={() => setStreamSource('simulated')}
               className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 streamSource === 'simulated'
-                  ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+                  ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               Simulated Stream
@@ -157,8 +161,8 @@ export default function ActivityFeed() {
               onClick={() => setStreamSource('blockchain')}
               className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 streamSource === 'blockchain'
-                  ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+                  ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               On-Chain Subscription
@@ -167,12 +171,12 @@ export default function ActivityFeed() {
         </div>
 
         {/* Live streaming status badge */}
-        <div className="flex items-center gap-2 mb-6 px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl max-w-max">
+        <div className="flex items-center gap-2 mb-6 px-4 py-2.5 bg-slate-950/60 border border-slate-800 rounded-xl max-w-max backdrop-blur-md">
           <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
           </span>
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
             {streamSource === 'simulated' ? 'Streaming simulated test events...' : `Subscribed to Stellar ${network} ledger...`}
           </span>
         </div>
@@ -182,28 +186,28 @@ export default function ActivityFeed() {
           {events.map((event) => (
             <div
               key={event.id}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex gap-4 items-start text-left animate-in slide-in-from-top-4 duration-200"
+              className="web3-card rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex gap-4 items-start text-left animate-in slide-in-from-top-4 duration-200"
             >
-              <div className={`h-10 w-10 rounded-xl border flex items-center justify-center text-lg ${getEventStyle(event.type)}`}>
+              <div className={`h-10 w-10 rounded-xl border flex items-center justify-center text-lg shrink-0 ${getEventStyle(event.type)}`}>
                 {getEventEmoji(event.type)}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-start">
-                  <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white">
+                  <h3 className="font-bold text-sm sm:text-base text-white">
                     {event.title}
                   </h3>
-                  <span className="text-[10px] text-slate-400 font-medium font-mono">{event.timestamp}</span>
+                  <span className="text-[10px] text-slate-500 font-medium font-mono">{event.timestamp}</span>
                 </div>
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-450 mt-1 leading-relaxed">
                   {event.description}
                 </p>
-                <div className="flex items-center gap-1.5 mt-3 text-[10px] font-semibold text-slate-400">
+                <div className="flex items-center gap-1.5 mt-3 text-[10px] font-semibold text-slate-500">
                   <span>Tx Hash:</span>
                   <a
                     href={`https://stellar.expert/explorer/testnet/tx/${event.txHash}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="font-mono text-emerald-600 hover:text-emerald-700 hover:underline"
+                    className="font-mono text-indigo-400 hover:text-indigo-300 hover:underline"
                   >
                     {event.txHash}
                   </a>
