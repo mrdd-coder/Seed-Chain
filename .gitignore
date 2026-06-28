@@ -18,3 +18,7 @@
 # Operating System files
 .DS_Store
 Thumbs.db
+
+# Soroban test snapshots
+**/test_snapshots/
+
