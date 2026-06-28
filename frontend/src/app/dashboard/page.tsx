@@ -11,6 +11,9 @@ export default function Dashboard() {
   const { address, isConnected, network, rpcUrl } = useWalletStore();
   const { addTransaction, addConsoleLog } = useTransactionStore();
 
+  const [showAdvancedRegistry, setShowAdvancedRegistry] = useState(false);
+  const [showAdvancedCampaign, setShowAdvancedCampaign] = useState(false);
+
   // Form states for Level 1 XLM Transfer
   const [xlmDest, setXlmDest] = useState('');
   const [xlmAmt, setXlmAmt] = useState('5');
@@ -448,33 +451,44 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Global Contract Settings (Registry Target) */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">⚙️</span>
-            <div className="text-left">
-              <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Syndicate Registry</div>
-              <div className="text-xs font-medium text-slate-500 font-mono truncate max-w-[250px] sm:max-w-md">
-                {registryAddress}
+        {/* Advanced Developer Settings Toggle */}
+        <div className="mb-6 text-left">
+          <button
+            onClick={() => setShowAdvancedRegistry(!showAdvancedRegistry)}
+            className="text-xs font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-350 flex items-center gap-1 cursor-pointer"
+          >
+            {showAdvancedRegistry ? '▼' : '▶'} Advanced Developer Settings
+          </button>
+        </div>
+
+        {showAdvancedRegistry && (
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">⚙️</span>
+              <div className="text-left">
+                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Syndicate Registry</div>
+                <div className="text-xs font-medium text-slate-500 font-mono truncate max-w-[250px] sm:max-w-md">
+                  {registryAddress}
+                </div>
               </div>
             </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <input
+                type="text"
+                value={registryAddress}
+                onChange={(e) => setRegistryAddress(e.target.value)}
+                className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 text-xs font-mono rounded-lg px-3 py-1.5 focus:outline-none focus:border-emerald-500 w-full sm:w-64"
+                placeholder="Registry Address"
+              />
+              <button
+                onClick={loadBlockchainData}
+                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-bold rounded-lg cursor-pointer"
+              >
+                Reload
+              </button>
+            </div>
           </div>
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <input
-              type="text"
-              value={registryAddress}
-              onChange={(e) => setRegistryAddress(e.target.value)}
-              className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 text-xs font-mono rounded-lg px-3 py-1.5 focus:outline-none focus:border-emerald-500 w-full sm:w-64"
-              placeholder="Registry Address"
-            />
-            <button
-              onClick={loadBlockchainData}
-              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-bold rounded-lg cursor-pointer"
-            >
-              Reload
-            </button>
-          </div>
-        </div>
+        )}
 
         {/* TAB content: BROWSE */}
         {activeTab === 'browse' && !selectedCampaign && (
@@ -550,34 +564,34 @@ export default function Dashboard() {
               <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
                 <div>
                   <h3 className="font-extrabold text-lg text-slate-900 dark:text-white flex items-center gap-2">
-                    <span className="text-emerald-600">🚀</span> Stellar XLM Payment
+                    <span className="text-emerald-600">🚀</span> Send Stellar XLM
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    Send native XLM transactions directly on the Stellar Testnet (Level 1 Requirement).
+                    Easily transfer native XLM directly on the Stellar Testnet.
                   </p>
                 </div>
 
                 <form onSubmit={handleXlmTransfer} className="space-y-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Destination Address</label>
+                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Recipient Stellar Address (G...)</label>
                     <input
                       type="text"
                       value={xlmDest}
                       onChange={(e) => setXlmDest(e.target.value)}
                       className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-emerald-500 w-full"
-                      placeholder="e.g. G..."
+                      placeholder="e.g. GC3..."
                       required
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">XLM Amount</label>
+                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Amount (XLM)</label>
                     <input
                       type="number"
                       value={xlmAmt}
                       onChange={(e) => setXlmAmt(e.target.value)}
                       className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 w-full"
-                      placeholder="5"
+                      placeholder="e.g. 10"
                       min="1"
                       required
                     />
@@ -588,7 +602,7 @@ export default function Dashboard() {
                     disabled={xlmSending}
                     className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all cursor-pointer disabled:bg-slate-400"
                   >
-                    {xlmSending ? 'Sending Payment...' : 'Send XLM Transaction'}
+                    {xlmSending ? 'Transferring XLM...' : 'Send XLM'}
                   </button>
                 </form>
               </div>
@@ -672,20 +686,20 @@ export default function Dashboard() {
                                 Unlocks {m.amount_pct}% of total fund ({(Number(selectedCampaign.totalPledged) * m.amount_pct) / 100} USDC)
                               </p>
 
-                              {/* Voting actions for investors */}
-                              {m.status === 'PayoutRequested' && isConnected && (
+                              {/* Voting actions for active investors */}
+                              {m.status === 'PayoutRequested' && isConnected && Number(userPledge) > 0 && (
                                 <div className="flex items-center gap-2 pt-2">
                                   <button
                                     onClick={() => handleVote(m.id, true)}
                                     className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
                                   >
-                                    Approve Release
+                                    Approve Payout
                                   </button>
                                   <button
                                     onClick={() => handleVote(m.id, false)}
                                     className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
                                   >
-                                    Reject Release
+                                    Reject Payout
                                   </button>
                                 </div>
                               )}
@@ -700,13 +714,19 @@ export default function Dashboard() {
 
               {/* Campaign Actions Panel */}
               <div className="space-y-6">
-                {/* Pledge panel */}
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-4">
-                  <h3 className="font-bold text-lg text-slate-900 dark:text-white">Syndicate Escrow Pledging</h3>
+                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-6">
+                  <div>
+                    <h3 className="font-bold text-lg text-slate-900 dark:text-white">Backing & Governance</h3>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Support this project or vote to recall funds if you are an investor.
+                    </p>
+                  </div>
                   
-                  <div className="space-y-3">
-                    <div className="text-xs text-slate-500">
-                      Your current pledge weight: <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{userPledge} USDC</span>
+                  {/* Pledge Form */}
+                  <div className="space-y-3 text-left">
+                    <div className="flex justify-between items-center text-xs text-slate-500">
+                      <span>Your investment:</span>
+                      <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{userPledge} USDC</span>
                     </div>
 
                     <div className="flex gap-2">
@@ -723,19 +743,18 @@ export default function Dashboard() {
                       onClick={handlePledge}
                       className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                     >
-                      Pledge Funds to Escrow
+                      Invest in Project
                     </button>
-                  </div>
-                </div>
-
-                {/* Refund & Governance Panel */}
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-4">
-                  <h3 className="font-bold text-lg text-slate-900 dark:text-white">Escrow Governance</h3>
-                  
-                  <div className="space-y-3 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                    <p>
-                      If a founder fails to deliver on milestones, investors can vote on-chain to trigger a full refund.
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 text-center">
+                      Funds will be held securely in escrow and released per milestone.
                     </p>
+                  </div>
+
+                  {/* Governance / Refund Option */}
+                  <div className="border-t border-slate-100 dark:border-slate-800 pt-5 space-y-3 text-left">
+                    <div className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                      <strong>Escrow Safeguard:</strong> If the founder fails to deliver on milestones, you can vote to recall the remaining escrow funds.
+                    </div>
                     {selectedCampaign.refundActive ? (
                       <div className="p-3 border border-red-200 bg-red-50 dark:bg-red-950/20 dark:border-red-900 rounded-lg text-red-600 dark:text-red-400">
                         <strong>Refund Active!</strong> Proportional remaining escrow funds can be claimed.
@@ -746,16 +765,18 @@ export default function Dashboard() {
                           }}
                           className="w-full mt-2 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-xs transition-all cursor-pointer"
                         >
-                          Claim Proportional Refund
+                          Claim Refund
                         </button>
                       </div>
                     ) : (
-                      <button
-                        onClick={handleTriggerRefundVote}
-                        className="w-full py-2 border border-red-200 text-red-600 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 font-bold rounded-xl text-sm transition-all cursor-pointer"
-                      >
-                        Vote to Trigger Refund
-                      </button>
+                      Number(userPledge) > 0 && (
+                        <button
+                          onClick={handleTriggerRefundVote}
+                          className="w-full py-2 border border-red-200 text-red-600 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 font-bold rounded-xl text-xs transition-all cursor-pointer"
+                        >
+                          Vote for Refund (Recall Funds)
+                        </button>
+                      )
                     )}
                   </div>
                 </div>
@@ -770,51 +791,66 @@ export default function Dashboard() {
             <h2 className="text-xl font-extrabold text-slate-900 dark:text-white mb-6">Launch New Investment Syndicate</h2>
             
             <form onSubmit={handleCreateCampaign} className="space-y-5 text-left">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Unique Deployment Salt</label>
-                  <input
-                    type="text"
-                    value={saltInput}
-                    onChange={(e) => setSaltInput(e.target.value)}
-                    className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full"
-                    required
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Funding Goal (USDC)</label>
-                  <input
-                    type="number"
-                    value={goalInput}
-                    onChange={(e) => setGoalInput(e.target.value)}
-                    className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full"
-                    required
-                  />
-                </div>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-400 dark:text-slate-350 uppercase tracking-wide">Funding Goal (USDC)</label>
+                <input
+                  type="number"
+                  value={goalInput}
+                  onChange={(e) => setGoalInput(e.target.value)}
+                  className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full"
+                  placeholder="e.g. 10000"
+                  required
+                />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Deadline (Ledgers, e.g. 10000)</label>
-                  <input
-                    type="number"
-                    value={deadlineInput}
-                    onChange={(e) => setDeadlineInput(e.target.value)}
-                    className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full"
-                    required
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Payment Asset Address</label>
-                  <input
-                    type="text"
-                    value={tokenInput}
-                    onChange={(e) => setTokenInput(e.target.value)}
-                    className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full"
-                    required
-                  />
-                </div>
+              {/* Advanced Settings Toggle */}
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAdvancedCampaign(!showAdvancedCampaign)}
+                  className="text-xs font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 flex items-center gap-1 cursor-pointer"
+                >
+                  {showAdvancedCampaign ? '▼' : '▶'} Advanced Settings (optional)
+                </button>
               </div>
+
+              {showAdvancedCampaign && (
+                <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4 bg-slate-50/50 dark:bg-slate-900/20 animate-in fade-in slide-in-from-top-1 duration-200">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Unique Deployment Salt</label>
+                      <input
+                        type="text"
+                        value={saltInput}
+                        onChange={(e) => setSaltInput(e.target.value)}
+                        className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Deadline (Ledgers, e.g. 10000)</label>
+                      <input
+                        type="number"
+                        value={deadlineInput}
+                        onChange={(e) => setDeadlineInput(e.target.value)}
+                        className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Payment Asset Address</label>
+                    <input
+                      type="text"
+                      value={tokenInput}
+                      onChange={(e) => setTokenInput(e.target.value)}
+                      className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full"
+                      required
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* Milestone Details */}
               <div className="space-y-3 border-t border-slate-100 dark:border-slate-800 pt-4">
@@ -865,7 +901,7 @@ export default function Dashboard() {
                 type="submit"
                 className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-all hover:scale-[1.01] active:scale-[0.99] mt-6 cursor-pointer"
               >
-                Deploy Campaign Smart Contract
+                Launch Project Campaign
               </button>
             </form>
           </div>
