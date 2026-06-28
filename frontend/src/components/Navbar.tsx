@@ -6,14 +6,13 @@ import { usePathname } from 'next/navigation';
 import { useWalletStore, NetworkId } from '../state/wallet';
 import { StellarWalletsKit, Networks } from '@creit.tech/stellar-wallets-kit';
 import { FreighterModule } from '@creit.tech/stellar-wallets-kit/modules/freighter';
-import { AlbedoModule } from '@creit.tech/stellar-wallets-kit/modules/albedo';
 import SeedChainLogo from './SeedChainLogo';
 
 export default function Navbar() {
   const pathname = usePathname();
   const { address, walletId, network, isConnected, xlmBalance, connect, disconnect, setNetwork, setXlmBalance } = useWalletStore();
   const [mounted, setMounted] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [connecting, setConnecting] = useState(false);
 
   // Fetch XLM balance from Horizon Testnet
   const fetchBalance = async (addr: string) => {
@@ -48,29 +47,26 @@ export default function Navbar() {
   // Avoid hydration mismatch by checking mounting state
   useEffect(() => {
     setMounted(true);
-    // Initialize the StellarWalletsKit on mount
+    // Initialize the StellarWalletsKit on mount with Freighter only
     StellarWalletsKit.init({
       network: Networks.TESTNET,
       modules: [
         new FreighterModule(),
-        new AlbedoModule(),
       ],
     });
   }, []);
 
-  const handleConnectWallet = async (selectedWallet: 'freighter' | 'albedo') => {
+  const handleConnectWallet = async () => {
     try {
-      // Set the active wallet module
-      StellarWalletsKit.setWallet(selectedWallet);
-      
-      // Fetch the address from the wallet extension
+      setConnecting(true);
+      StellarWalletsKit.setWallet('freighter');
       const { address: connectedAddress } = await StellarWalletsKit.fetchAddress();
-      
-      connect(selectedWallet, connectedAddress);
-      setIsModalOpen(false);
+      connect('freighter', connectedAddress);
     } catch (error) {
       console.error('Wallet connection failed:', error);
-      alert('Failed to connect wallet. Ensure Freighter or Albedo is installed.');
+      alert('Failed to connect. Make sure the Freighter browser extension is installed.');
+    } finally {
+      setConnecting(false);
     }
   };
 
@@ -115,105 +111,59 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* Action Controls & Wallet Connection */}
-        <div className="flex items-center gap-3">
-          {/* Network Badge */}
-          {isConnected && (
-            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-500/5 border border-indigo-500/20">
-              <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
-              <span className="text-[10px] font-bold text-indigo-400 tracking-wider uppercase">
-                {network}
-              </span>
-            </div>
-          )}
-
-          {/* Wallet Button */}
+        {/* Wallet Connection */}
+        <div className="flex items-center gap-2.5">
           {isConnected && address ? (
-            <div className="flex items-center gap-2 border border-slate-800 rounded-xl p-1 pr-3 bg-slate-950/60">
-              <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-indigo-500/20 to-violet-500/20 flex items-center justify-center text-xs font-bold text-indigo-400 uppercase">
-                {walletId ? walletId[0] : 'W'}
+            <>
+              {/* Network indicator */}
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-500/5 border border-indigo-500/15">
+                <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
+                <span className="text-[10px] font-bold text-indigo-400 tracking-wider uppercase">
+                  {network}
+                </span>
               </div>
-              <span className="text-xs font-semibold font-mono text-slate-300">
-                {address.substring(0, 5)}...{address.substring(address.length - 4)}
-              </span>
-              <span className="text-xs font-bold text-indigo-400 bg-indigo-950/40 px-2 py-0.5 rounded-lg border border-indigo-900/40">
-                {xlmBalance !== null ? `${xlmBalance} XLM` : '... XLM'}
-              </span>
+
+              {/* Wallet info pill */}
+              <div className="flex items-center gap-2 bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2">
+                <div className="h-6 w-6 rounded-md bg-gradient-to-br from-indigo-500/20 to-violet-500/20 flex items-center justify-center">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-400">
+                    <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" /><path d="M3 5v14a2 2 0 0 0 2 2h16v-5" /><path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
+                  </svg>
+                </div>
+                <span className="text-xs font-semibold font-mono text-slate-300">
+                  {address.substring(0, 4)}...{address.substring(address.length - 4)}
+                </span>
+                <span className="text-[11px] font-bold text-indigo-400 bg-indigo-950/50 px-2 py-0.5 rounded-md border border-indigo-900/30">
+                  {xlmBalance !== null ? `${xlmBalance} XLM` : '...'}
+                </span>
+              </div>
+
+              {/* Disconnect */}
               <button
                 onClick={disconnect}
-                className="ml-2 text-xs font-bold text-red-400 hover:text-red-300 hover:underline cursor-pointer"
+                className="px-3 py-2 text-xs font-bold text-slate-400 hover:text-red-400 bg-slate-950/60 border border-slate-800 hover:border-red-500/30 rounded-xl transition-all cursor-pointer"
               >
-                Disconnect
+                ✕
               </button>
-            </div>
+            </>
           ) : (
             <button
-              onClick={() => setIsModalOpen(true)}
-              className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-500/10 hover:shadow-indigo-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+              onClick={handleConnectWallet}
+              disabled={connecting}
+              className="px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-500/10 hover:shadow-indigo-500/25 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer disabled:opacity-60"
             >
-              Connect Wallet
+              {connecting ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                  Connecting...
+                </span>
+              ) : (
+                'Connect Freighter'
+              )}
             </button>
           )}
         </div>
       </div>
-
-      {/* Connection Dialog Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="px-6 py-5 border-b border-slate-800 flex items-center justify-between">
-              <h3 className="font-extrabold text-white text-sm">Select Stellar Wallet</h3>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-white font-bold text-sm"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="p-6 space-y-3">
-              <button
-                onClick={() => handleConnectWallet('freighter')}
-                className="w-full flex items-center justify-between p-3.5 border border-slate-800 rounded-xl hover:bg-slate-800/40 hover:border-indigo-500/30 transition-all text-left group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-lg bg-indigo-500/10 flex items-center justify-center text-lg shadow-inner">
-                    🚢
-                  </div>
-                  <div>
-                    <div className="font-bold text-sm text-slate-200 group-hover:text-indigo-400 transition-colors">
-                      Freighter Wallet
-                    </div>
-                    <div className="text-xs text-slate-500">
-                      Stellar official extension
-                    </div>
-                  </div>
-                </div>
-                <span className="text-slate-500 group-hover:translate-x-1 transition-all">→</span>
-              </button>
-
-              <button
-                onClick={() => handleConnectWallet('albedo')}
-                className="w-full flex items-center justify-between p-3.5 border border-slate-800 rounded-xl hover:bg-slate-800/40 hover:border-indigo-500/30 transition-all text-left group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-lg bg-cyan-500/10 flex items-center justify-center text-lg shadow-inner">
-                    🌌
-                  </div>
-                  <div>
-                    <div className="font-bold text-sm text-slate-200 group-hover:text-cyan-400 transition-colors">
-                      Albedo
-                    </div>
-                    <div className="text-xs text-slate-500">
-                      Web-based browser key manager
-                    </div>
-                  </div>
-                </div>
-                <span className="text-slate-500 group-hover:translate-x-1 transition-all">→</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </header>
   );
 }
