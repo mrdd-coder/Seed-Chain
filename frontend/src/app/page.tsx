@@ -62,17 +62,17 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-200">
+    <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-800 dark:text-slate-200 transition-colors duration-200">
       <Navbar />
 
       {/* Hero Section */}
       <section className="relative py-20 lg:py-28 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-orange-50 text-orange-600 border border-orange-200 dark:bg-orange-950/30 dark:border-orange-900 mb-6">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-900 mb-6">
             🎉 Soroban Level 3 Investment Syndicate Live on Testnet
           </span>
           <h1 className="text-4xl sm:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none max-w-4xl mx-auto">
-            Decentralized Startup Funding with <span className="text-orange-600">On-Chain Escrows</span>
+            Decentralized Startup Funding with <span className="text-emerald-600">On-Chain Escrows</span>
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-medium">
             SeedChain eliminates founder defaults and builds investor trust. Raise capital from global syndicates with funds gated by milestone approval voting.
@@ -80,7 +80,7 @@ export default function Home() {
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Link
               href="/dashboard"
-              className="px-6 py-3.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all hover:scale-[1.01] active:scale-[0.99]"
+              className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all hover:scale-[1.01] active:scale-[0.99]"
             >
               Explore Campaigns
             </Link>
@@ -130,7 +130,7 @@ export default function Home() {
                 key={idx}
                 className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow"
               >
-                <div className="h-12 w-12 rounded-xl bg-orange-50 dark:bg-orange-950/50 flex items-center justify-center text-2xl mb-5">
+                <div className="h-12 w-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 flex items-center justify-center text-2xl mb-5">
                   {feature.icon}
                 </div>
                 <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">
@@ -159,7 +159,7 @@ export default function Home() {
             </div>
             <Link
               href="/dashboard"
-              className="hidden sm:inline-block text-sm font-bold text-orange-600 hover:text-orange-700"
+              className="hidden sm:inline-block text-sm font-bold text-emerald-600 hover:text-emerald-700"
             >
               View all campaigns →
             </Link>
@@ -197,7 +197,7 @@ export default function Home() {
                     </div>
                     <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                       <div
-                        className="bg-orange-600 h-full rounded-full transition-all"
+                        className="bg-emerald-600 h-full rounded-full transition-all"
                         style={{ width: `${project.progress}%` }}
                       ></div>
                     </div>
@@ -207,7 +207,7 @@ export default function Home() {
                   <span className="text-xs text-slate-500 dark:text-slate-400">Escrow Managed</span>
                   <Link
                     href={`/dashboard?campaign=${project.title}`}
-                    className="text-xs font-bold text-orange-600 hover:text-orange-700 hover:underline"
+                    className="text-xs font-bold text-emerald-600 hover:text-emerald-700 hover:underline"
                   >
                     Invest Now
                   </Link>
@@ -222,7 +222,7 @@ export default function Home() {
       <footer className="bg-slate-900 border-t border-slate-800 py-12 text-slate-400">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
           <div className="font-bold text-white text-lg">
-            Seed<span className="text-orange-500">Chain</span>
+            Seed<span className="text-emerald-500">Chain</span>
           </div>
           <p className="text-sm max-w-md mx-auto">
             A production-ready Soroban level 3 syndicate investment platform built on the Stellar network. Secure escrows for modern startup crowdfunding.

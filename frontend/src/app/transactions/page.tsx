@@ -14,7 +14,7 @@ export default function TransactionCenter() {
       case 'failed':
         return 'bg-red-50 border-red-200 text-red-700 dark:bg-red-950/20 dark:border-red-900 dark:text-red-400';
       case 'processing':
-        return 'bg-orange-50 border-orange-200 text-orange-700 dark:bg-orange-950/20 dark:border-orange-900 dark:text-orange-400 animate-pulse';
+        return 'bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/20 dark:border-emerald-900 dark:text-emerald-400 animate-pulse';
       default:
         return 'bg-slate-100 border-slate-200 text-slate-500 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400';
     }
@@ -30,7 +30,7 @@ export default function TransactionCenter() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-800 dark:text-slate-200 transition-colors">
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -89,7 +89,7 @@ export default function TransactionCenter() {
                           href={tx.explorerLink}
                           target="_blank"
                           rel="noreferrer"
-                          className="sm:ml-auto text-orange-600 hover:text-orange-700 font-bold hover:underline"
+                          className="sm:ml-auto text-emerald-600 hover:text-emerald-700 font-bold hover:underline"
                         >
                           View in Block Explorer ↗
                         </a>
@@ -121,7 +121,7 @@ export default function TransactionCenter() {
           <div className="bg-slate-900 text-slate-200 border border-slate-850 rounded-2xl shadow-xl overflow-hidden flex flex-col h-[500px]">
             <div className="px-5 py-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-orange-500 animate-pulse"></span>
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Developer Log Console</span>
               </div>
               <button

@@ -47,7 +47,7 @@ export default function Analytics() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-800 dark:text-slate-200 transition-colors">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
@@ -96,7 +96,7 @@ export default function Analytics() {
                       tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`}
                     />
                     <Tooltip
-                      contentStyle={{ background: '#0f172a', border: 'none', borderRadius: '8px', color: '#fff', fontSize: '12px' }}
+                      contentStyle={{ background: '#000000', border: 'none', borderRadius: '8px', color: '#fff', fontSize: '12px' }}
                       formatter={(value: any) => [`$${value.toLocaleString()} USDC`, 'TVL']}
                     />
                     <Line type="monotone" dataKey="TVL" stroke="#ea580c" strokeWidth={3} activeDot={{ r: 6 }} />
@@ -123,7 +123,7 @@ export default function Analytics() {
                       tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`}
                     />
                     <Tooltip
-                      contentStyle={{ background: '#0f172a', border: 'none', borderRadius: '8px', color: '#fff', fontSize: '12px' }}
+                      contentStyle={{ background: '#000000', border: 'none', borderRadius: '8px', color: '#fff', fontSize: '12px' }}
                       formatter={(value: any) => [`$${value.toLocaleString()} USDC`, 'Total Pledged']}
                     />
                     <Bar dataKey="Pledged" fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={45} />

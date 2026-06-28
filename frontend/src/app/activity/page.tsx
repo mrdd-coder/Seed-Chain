@@ -130,7 +130,7 @@ export default function ActivityFeed() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-800 dark:text-slate-200 transition-colors">
       <Navbar />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -147,7 +147,7 @@ export default function ActivityFeed() {
               onClick={() => setStreamSource('simulated')}
               className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 streamSource === 'simulated'
-                  ? 'bg-white dark:bg-slate-800 text-orange-600 dark:text-orange-400 shadow-sm'
+                  ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
                   : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
               }`}
             >
@@ -157,7 +157,7 @@ export default function ActivityFeed() {
               onClick={() => setStreamSource('blockchain')}
               className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 streamSource === 'blockchain'
-                  ? 'bg-white dark:bg-slate-800 text-orange-600 dark:text-orange-400 shadow-sm'
+                  ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
                   : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
               }`}
             >
@@ -169,8 +169,8 @@ export default function ActivityFeed() {
         {/* Live streaming status badge */}
         <div className="flex items-center gap-2 mb-6 px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl max-w-max">
           <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
           <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             {streamSource === 'simulated' ? 'Streaming simulated test events...' : `Subscribed to Stellar ${network} ledger...`}
@@ -203,7 +203,7 @@ export default function ActivityFeed() {
                     href={`https://stellar.expert/explorer/testnet/tx/${event.txHash}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="font-mono text-orange-600 hover:text-orange-700 hover:underline"
+                    className="font-mono text-emerald-600 hover:text-emerald-700 hover:underline"
                   >
                     {event.txHash}
                   </a>

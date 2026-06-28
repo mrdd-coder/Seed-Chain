@@ -411,7 +411,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-800 dark:text-slate-200 transition-colors">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -429,7 +429,7 @@ export default function Dashboard() {
               onClick={() => { setActiveTab('browse'); setSelectedCampaign(null); }}
               className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer ${
                 activeTab === 'browse'
-                  ? 'bg-white dark:bg-slate-800 text-orange-600 dark:text-orange-400 shadow-sm'
+                  ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
                   : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
               }`}
             >
@@ -439,7 +439,7 @@ export default function Dashboard() {
               onClick={() => setActiveTab('create')}
               className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer ${
                 activeTab === 'create'
-                  ? 'bg-white dark:bg-slate-800 text-orange-600 dark:text-orange-400 shadow-sm'
+                  ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
                   : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
               }`}
             >
@@ -464,7 +464,7 @@ export default function Dashboard() {
               type="text"
               value={registryAddress}
               onChange={(e) => setRegistryAddress(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-mono rounded-lg px-3 py-1.5 focus:outline-none focus:border-orange-500 w-full sm:w-64"
+              className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 text-xs font-mono rounded-lg px-3 py-1.5 focus:outline-none focus:border-emerald-500 w-full sm:w-64"
               placeholder="Registry Address"
             />
             <button
@@ -496,12 +496,12 @@ export default function Dashboard() {
                       <div
                         key={idx}
                         onClick={() => handleSelectCampaign(camp)}
-                        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md cursor-pointer hover:border-orange-500/30 transition-all group flex flex-col justify-between"
+                        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md cursor-pointer hover:border-emerald-500/30 transition-all group flex flex-col justify-between"
                       >
                         <div>
                           <div className="flex items-center justify-between mb-4">
                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                              isSim ? 'bg-indigo-50 border-indigo-200 text-indigo-600 dark:bg-indigo-950/20' : 'bg-orange-50 border-orange-200 text-orange-600 dark:bg-orange-950/20'
+                              isSim ? 'bg-indigo-50 border-indigo-200 text-indigo-600 dark:bg-indigo-950/20' : 'bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-950/20'
                             } border`}>
                               {isSim ? 'SIMULATOR SANDBOX' : 'SOROBAN CONTRACT'}
                             </span>
@@ -512,7 +512,7 @@ export default function Dashboard() {
                             )}
                           </div>
                           
-                          <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-orange-600 transition-colors">
+                          <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-emerald-600 transition-colors">
                             {camp.address.includes('Solar') ? 'SolarGrid Protocol' : camp.address.includes('Stellar') ? 'StellarPay Mobile' : `Campaign ${camp.address.substring(0, 8)}`}
                           </h3>
                           <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mb-4 truncate">
@@ -527,14 +527,14 @@ export default function Dashboard() {
                               </span>
                             </div>
                             <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                              <div className="bg-orange-600 h-full rounded-full" style={{ width: `${percent}%` }}></div>
+                              <div className="bg-emerald-600 h-full rounded-full" style={{ width: `${percent}%` }}></div>
                             </div>
                           </div>
                         </div>
 
                         <div className="flex justify-between items-center text-xs text-slate-500 border-t border-slate-100 dark:border-slate-800 pt-4">
                           <span>Goal: {camp.goal} USDC</span>
-                          <span className="font-bold text-orange-600 dark:text-orange-400 group-hover:underline">
+                          <span className="font-bold text-emerald-600 dark:text-emerald-400 group-hover:underline">
                             View details →
                           </span>
                         </div>
@@ -550,7 +550,7 @@ export default function Dashboard() {
               <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
                 <div>
                   <h3 className="font-extrabold text-lg text-slate-900 dark:text-white flex items-center gap-2">
-                    <span className="text-orange-600">🚀</span> Stellar XLM Payment
+                    <span className="text-emerald-600">🚀</span> Stellar XLM Payment
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                     Send native XLM transactions directly on the Stellar Testnet (Level 1 Requirement).
@@ -564,7 +564,7 @@ export default function Dashboard() {
                       type="text"
                       value={xlmDest}
                       onChange={(e) => setXlmDest(e.target.value)}
-                      className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-orange-500 w-full"
+                      className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-emerald-500 w-full"
                       placeholder="e.g. G..."
                       required
                     />
@@ -576,7 +576,7 @@ export default function Dashboard() {
                       type="number"
                       value={xlmAmt}
                       onChange={(e) => setXlmAmt(e.target.value)}
-                      className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-orange-500 w-full"
+                      className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 w-full"
                       placeholder="5"
                       min="1"
                       required
@@ -586,7 +586,7 @@ export default function Dashboard() {
                   <button
                     type="submit"
                     disabled={xlmSending}
-                    className="w-full py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl text-xs transition-all cursor-pointer disabled:bg-slate-400"
+                    className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all cursor-pointer disabled:bg-slate-400"
                   >
                     {xlmSending ? 'Sending Payment...' : 'Send XLM Transaction'}
                   </button>
@@ -628,7 +628,7 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <div className="text-xs text-slate-400 font-bold uppercase">Total Raised</div>
-                      <div className="text-lg font-bold text-orange-600 dark:text-orange-400 mt-1">
+                      <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400 mt-1">
                         {selectedCampaign.totalPledged} USDC
                       </div>
                     </div>
@@ -706,7 +706,7 @@ export default function Dashboard() {
                   
                   <div className="space-y-3">
                     <div className="text-xs text-slate-500">
-                      Your current pledge weight: <span className="font-mono font-bold text-orange-600 dark:text-orange-400">{userPledge} USDC</span>
+                      Your current pledge weight: <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{userPledge} USDC</span>
                     </div>
 
                     <div className="flex gap-2">
@@ -714,14 +714,14 @@ export default function Dashboard() {
                         type="number"
                         value={pledgeAmount}
                         onChange={(e) => setPledgeAmountInput(e.target.value)}
-                        className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 w-full"
+                        className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full"
                         placeholder="USDC Amount"
                       />
                     </div>
 
                     <button
                       onClick={handlePledge}
-                      className="w-full py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                      className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                     >
                       Pledge Funds to Escrow
                     </button>
@@ -777,7 +777,7 @@ export default function Dashboard() {
                     type="text"
                     value={saltInput}
                     onChange={(e) => setSaltInput(e.target.value)}
-                    className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 w-full"
+                    className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full"
                     required
                   />
                 </div>
@@ -787,7 +787,7 @@ export default function Dashboard() {
                     type="number"
                     value={goalInput}
                     onChange={(e) => setGoalInput(e.target.value)}
-                    className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 w-full"
+                    className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full"
                     required
                   />
                 </div>
@@ -800,7 +800,7 @@ export default function Dashboard() {
                     type="number"
                     value={deadlineInput}
                     onChange={(e) => setDeadlineInput(e.target.value)}
-                    className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 w-full"
+                    className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full"
                     required
                   />
                 </div>
@@ -810,7 +810,7 @@ export default function Dashboard() {
                     type="text"
                     value={tokenInput}
                     onChange={(e) => setTokenInput(e.target.value)}
-                    className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 w-full"
+                    className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full"
                     required
                   />
                 </div>
@@ -826,7 +826,7 @@ export default function Dashboard() {
                       type="text"
                       value={milestone1Desc}
                       onChange={(e) => setMilestone1Desc(e.target.value)}
-                      className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-orange-500 w-full"
+                      className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 w-full"
                       placeholder="Milestone 1 Description"
                       required
                     />
@@ -834,7 +834,7 @@ export default function Dashboard() {
                       type="number"
                       value={milestone1Pct}
                       onChange={(e) => setMilestone1Pct(e.target.value)}
-                      className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-orange-500 w-24"
+                      className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 w-24"
                       placeholder="%"
                       required
                     />
@@ -845,7 +845,7 @@ export default function Dashboard() {
                       type="text"
                       value={milestone2Desc}
                       onChange={(e) => setMilestone2Desc(e.target.value)}
-                      className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-orange-500 w-full"
+                      className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 w-full"
                       placeholder="Milestone 2 Description"
                       required
                     />
@@ -853,7 +853,7 @@ export default function Dashboard() {
                       type="number"
                       value={milestone2Pct}
                       onChange={(e) => setMilestone2Pct(e.target.value)}
-                      className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-orange-500 w-24"
+                      className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 w-24"
                       placeholder="%"
                       required
                     />
@@ -863,7 +863,7 @@ export default function Dashboard() {
 
               <button
                 type="submit"
-                className="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl text-sm transition-all hover:scale-[1.01] active:scale-[0.99] mt-6 cursor-pointer"
+                className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-all hover:scale-[1.01] active:scale-[0.99] mt-6 cursor-pointer"
               >
                 Deploy Campaign Smart Contract
               </button>

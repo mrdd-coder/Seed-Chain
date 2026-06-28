@@ -26,7 +26,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-800 dark:text-slate-200 transition-colors">
       <Navbar />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
@@ -40,7 +40,7 @@ export default function Settings() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Navigation panel */}
           <div className="md:col-span-1 space-y-1">
-            <button className="w-full text-left px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm font-bold text-orange-600 dark:text-orange-400 rounded-lg shadow-sm">
+            <button className="w-full text-left px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 rounded-lg shadow-sm">
               🌐 Network & RPC
             </button>
             <button
@@ -82,7 +82,7 @@ export default function Settings() {
                   onClick={() => handleNetworkChange(NetworkId.TESTNET)}
                   className={`flex-1 p-4 border rounded-xl font-bold text-sm text-center transition-all cursor-pointer ${
                     network === NetworkId.TESTNET
-                      ? 'border-orange-500 bg-orange-50/20 text-orange-600 dark:bg-orange-950/20'
+                      ? 'border-emerald-500 bg-emerald-50/20 text-emerald-600 dark:bg-emerald-950/20'
                       : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/40'
                   }`}
                 >
@@ -93,7 +93,7 @@ export default function Settings() {
                   onClick={() => handleNetworkChange(NetworkId.LOCAL)}
                   className={`flex-1 p-4 border rounded-xl font-bold text-sm text-center transition-all cursor-pointer ${
                     network === NetworkId.LOCAL
-                      ? 'border-orange-500 bg-orange-50/20 text-orange-600 dark:bg-orange-950/20'
+                      ? 'border-emerald-500 bg-emerald-50/20 text-emerald-600 dark:bg-emerald-950/20'
                       : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/40'
                   }`}
                 >
@@ -109,7 +109,7 @@ export default function Settings() {
                     type="url"
                     value={customRpc}
                     onChange={(e) => setCustomRpc(e.target.value)}
-                    className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 w-full font-mono"
+                    className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full font-mono"
                     required
                   />
                 </div>
@@ -120,13 +120,13 @@ export default function Settings() {
                     type="number"
                     value={gasLimit}
                     onChange={(e) => setGasLimit(e.target.value)}
-                    className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 w-full font-mono"
+                    className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full font-mono"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-slate-900 hover:bg-slate-850 dark:bg-orange-600 dark:hover:bg-orange-700 text-white font-bold rounded-lg text-xs tracking-wide transition-all cursor-pointer"
+                  className="px-4 py-2 bg-slate-900 hover:bg-slate-850 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white font-bold rounded-lg text-xs tracking-wide transition-all cursor-pointer"
                 >
                   Save RPC Settings
                 </button>
