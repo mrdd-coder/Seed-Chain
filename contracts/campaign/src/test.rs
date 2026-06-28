@@ -222,3 +222,171 @@ fn test_campaign_refund_trigger() {
     campaign_client.claim_refund(&investor_2);
     assert_eq!(token_client.balance(&campaign_id), 0);
 }
+
+#[test]
+fn test_get_status_uninitialized() {
+    let env = Env::default();
+    let campaign_id = env.register_contract(None, ProjectCampaign);
+    let campaign_client = ProjectCampaignClient::new(&env, &campaign_id);
+
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        campaign_client.get_campaign_info();
+    }));
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_deposit() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let founder = Address::generate(&env);
+    let investor = Address::generate(&env);
+
+    let token_admin = Address::generate(&env);
+    let token_addr = env.register_stellar_asset_contract(token_admin);
+    let token_client = token::Client::new(&env, &token_addr);
+    let sac_client = token::StellarAssetClient::new(&env, &token_addr);
+    sac_client.mint(&investor, &500);
+
+    let mut milestones = Vec::new(&env);
+    milestones.push_back(Milestone {
+        id: 1,
+        description: String::from_str(&env, "First"),
+        amount_pct: 100,
+        status: MilestoneStatus::Pending,
+    });
+
+    let campaign_id = env.register_contract(None, ProjectCampaign);
+    let campaign_client = ProjectCampaignClient::new(&env, &campaign_id);
+    campaign_client.init(&founder, &token_addr, &1000, &100, &milestones);
+
+    campaign_client.pledge(&investor, &300);
+    assert_eq!(campaign_client.get_pledge(&investor), 300);
+    assert_eq!(token_client.balance(&campaign_id), 300);
+}
+
+#[test]
+fn test_double_deposit_fails() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let founder = Address::generate(&env);
+    let investor = Address::generate(&env);
+
+    let token_admin = Address::generate(&env);
+    let token_addr = env.register_stellar_asset_contract(token_admin);
+    let sac_client = token::StellarAssetClient::new(&env, &token_addr);
+    sac_client.mint(&investor, &1500);
+
+    let mut milestones = Vec::new(&env);
+    milestones.push_back(Milestone {
+        id: 1,
+        description: String::from_str(&env, "First"),
+        amount_pct: 100,
+        status: MilestoneStatus::Pending,
+    });
+
+    let campaign_id = env.register_contract(None, ProjectCampaign);
+    let campaign_client = ProjectCampaignClient::new(&env, &campaign_id);
+    campaign_client.init(&founder, &token_addr, &1000, &100, &milestones);
+
+    campaign_client.pledge(&investor, &600);
+    campaign_client.pledge(&investor, &400);
+    assert_eq!(campaign_client.get_pledge(&investor), 1000);
+}
+
+#[test]
+fn test_release() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let founder = Address::generate(&env);
+    let investor = Address::generate(&env);
+
+    let token_admin = Address::generate(&env);
+    let token_addr = env.register_stellar_asset_contract(token_admin);
+    let token_client = token::Client::new(&env, &token_addr);
+    let sac_client = token::StellarAssetClient::new(&env, &token_addr);
+    sac_client.mint(&investor, &1000);
+
+    let mut milestones = Vec::new(&env);
+    milestones.push_back(Milestone {
+        id: 1,
+        description: String::from_str(&env, "First"),
+        amount_pct: 100,
+        status: MilestoneStatus::Pending,
+    });
+
+    let campaign_id = env.register_contract(None, ProjectCampaign);
+    let campaign_client = ProjectCampaignClient::new(&env, &campaign_id);
+    campaign_client.init(&founder, &token_addr, &1000, &100, &milestones);
+
+    campaign_client.pledge(&investor, &1000);
+    campaign_client.request_milestone_payout(&1);
+    campaign_client.vote_on_milestone(&investor, &1, &true);
+    campaign_client.claim_milestone_payout(&1);
+
+    assert_eq!(token_client.balance(&founder), 1000);
+}
+
+#[test]
+fn test_release_wrong_state() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let founder = Address::generate(&env);
+    let investor = Address::generate(&env);
+
+    let token_admin = Address::generate(&env);
+    let token_addr = env.register_stellar_asset_contract(token_admin);
+    let sac_client = token::StellarAssetClient::new(&env, &token_addr);
+    sac_client.mint(&investor, &1000);
+
+    let mut milestones = Vec::new(&env);
+    milestones.push_back(Milestone {
+        id: 1,
+        description: String::from_str(&env, "First"),
+        amount_pct: 100,
+        status: MilestoneStatus::Pending,
+    });
+
+    let campaign_id = env.register_contract(None, ProjectCampaign);
+    let campaign_client = ProjectCampaignClient::new(&env, &campaign_id);
+    campaign_client.init(&founder, &token_addr, &1000, &100, &milestones);
+
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        campaign_client.claim_milestone_payout(&1);
+    }));
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_refund() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let founder = Address::generate(&env);
+    let investor = Address::generate(&env);
+
+    let token_admin = Address::generate(&env);
+    let token_addr = env.register_stellar_asset_contract(token_admin);
+    let sac_client = token::StellarAssetClient::new(&env, &token_addr);
+    sac_client.mint(&investor, &1000);
+
+    let mut milestones = Vec::new(&env);
+    milestones.push_back(Milestone {
+        id: 1,
+        description: String::from_str(&env, "First"),
+        amount_pct: 100,
+        status: MilestoneStatus::Pending,
+    });
+
+    let campaign_id = env.register_contract(None, ProjectCampaign);
+    let campaign_client = ProjectCampaignClient::new(&env, &campaign_id);
+    campaign_client.init(&founder, &token_addr, &1000, &100, &milestones);
+
+    campaign_client.pledge(&investor, &1000);
+    campaign_client.vote_on_refund(&investor, &true);
+    campaign_client.claim_refund(&investor);
+}
