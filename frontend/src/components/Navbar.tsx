@@ -8,6 +8,7 @@ import { StellarWalletsKit, Networks } from '@creit.tech/stellar-wallets-kit';
 import { FreighterModule } from '@creit.tech/stellar-wallets-kit/modules/freighter';
 import { AlbedoModule } from '@creit.tech/stellar-wallets-kit/modules/albedo';
 import SeedChainLogo from './SeedChainLogo';
+import { createPortal } from 'react-dom';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -160,9 +161,9 @@ export default function Navbar() {
       </div>
 
       {/* ── Wallet Picker Modal ── */}
-      {isModalOpen && (
+      {isModalOpen && typeof window !== 'undefined' && createPortal(
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
           onClick={() => setIsModalOpen(false)}
         >
           {/* Backdrop */}
@@ -242,7 +243,8 @@ export default function Navbar() {
               </p>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Animation keyframe */}
