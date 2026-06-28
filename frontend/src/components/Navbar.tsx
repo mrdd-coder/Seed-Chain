@@ -7,6 +7,7 @@ import { useWalletStore, NetworkId } from '../state/wallet';
 import { StellarWalletsKit, Networks } from '@creit.tech/stellar-wallets-kit';
 import { FreighterModule } from '@creit.tech/stellar-wallets-kit/modules/freighter';
 import { AlbedoModule } from '@creit.tech/stellar-wallets-kit/modules/albedo';
+import SeedChainLogo from './SeedChainLogo';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -87,9 +88,9 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-slate-800/40 bg-slate-950/75 backdrop-blur-lg transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo */}
-        <div className="flex items-center gap-2">
-          <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight text-white">
-            <span className="h-7 w-7 rounded-lg bg-gradient-to-tr from-indigo-500 to-violet-600 flex items-center justify-center text-white text-xs font-black shadow-md shadow-indigo-500/10">SC</span>
+        <div className="flex items-center gap-2.5">
+          <Link href="/" className="flex items-center gap-2.5 font-bold text-xl tracking-tight text-white group">
+            <SeedChainLogo size={34} className="shadow-lg shadow-indigo-500/15 group-hover:shadow-indigo-500/25 transition-shadow duration-300" />
             <span>Seed<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-400 font-extrabold">Chain</span></span>
           </Link>
         </div>
