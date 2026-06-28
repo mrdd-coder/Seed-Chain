@@ -83,9 +83,15 @@ export default function Dashboard() {
         <div className="web3-card rounded-2xl p-6 space-y-5">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-extrabold text-white">Your Investments</h2>
-            <Link href="/campaigns" className="text-xs font-bold text-indigo-400 hover:text-indigo-300 hover:underline">
-              View all campaigns →
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link href="/campaigns" className="text-xs font-bold text-indigo-400 hover:text-indigo-300 hover:underline">
+                Explore campaigns →
+              </Link>
+              <span className="text-slate-800">|</span>
+              <Link href="/analytics" className="text-xs font-bold text-violet-400 hover:text-violet-300 hover:underline">
+                Platform Stats ↗
+              </Link>
+            </div>
           </div>
 
           {!isConnected ? (

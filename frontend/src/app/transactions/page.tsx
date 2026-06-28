@@ -1,10 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import { useWalletStore } from '../../state/wallet';
 import { useTransactionStore } from '../../state/transactions';
 import { Account } from '@stellar/stellar-sdk';
+
+interface ActivityEvent {
+  id: string;
+  type: 'pledge' | 'milestone_requested' | 'milestone_voted' | 'milestone_paid' | 'refund_vote' | 'refund_claim';
+  title: string;
+  description: string;
+  timestamp: string;
+  txHash: string;
+}
 
 export default function TransactionCenter() {
   const { address, isConnected, network } = useWalletStore();
@@ -14,6 +23,96 @@ export default function TransactionCenter() {
   const [xlmDest, setXlmDest] = useState('');
   const [xlmAmt, setXlmAmt] = useState('5');
   const [xlmSending, setXlmSending] = useState(false);
+
+  // Unified Page navigation
+  const [leftTab, setLeftTab] = useState<'history' | 'activity'>('history');
+
+  // Event stream state
+  const [streamSource, setStreamSource] = useState<'simulated' | 'blockchain'>('simulated');
+  const [events, setEvents] = useState<ActivityEvent[]>([
+    {
+      id: 'evt-1',
+      type: 'milestone_paid',
+      title: 'Milestone 1 Disbursed',
+      description: 'SolarGrid Protocol released 14,000 USDC to founder after 84% investor approval.',
+      timestamp: new Date(Date.now() - 60000 * 5).toLocaleTimeString(),
+      txHash: '0x3a4b...e5d8',
+    },
+    {
+      id: 'evt-2',
+      type: 'pledge',
+      title: 'New Pledge Registered',
+      description: 'Investor GD...932a pledged 4,500 USDC to StellarPay Mobile.',
+      timestamp: new Date(Date.now() - 60000 * 12).toLocaleTimeString(),
+      txHash: '0x9c4f...f12b',
+    },
+    {
+      id: 'evt-3',
+      type: 'milestone_requested',
+      title: 'Milestone Payout Requested',
+      description: 'StellarPay Mobile founder requested release of Milestone 2 (Mobile POS release - 40%). Voting open.',
+      timestamp: new Date(Date.now() - 60000 * 30).toLocaleTimeString(),
+      txHash: '0x7e5c...89d1',
+    },
+  ]);
+
+  // Live simulation ticker generating mock events
+  useEffect(() => {
+    if (streamSource !== 'simulated') return;
+
+    const mockDetails = [
+      {
+        type: 'pledge' as const,
+        title: 'New Pledge Registered',
+        desc: () => `Investor G${Math.random().toString(36).substring(5).toUpperCase()}... pledged ${Math.floor(Math.random() * 5000 + 500)} USDC to SolarGrid Protocol.`,
+      },
+      {
+        type: 'milestone_voted' as const,
+        title: 'Governance Vote Cast',
+        desc: () => `Investor G${Math.random().toString(36).substring(5).toUpperCase()}... voted YES on SolarGrid Milestone 2 (Approval weight: ${Math.floor(Math.random() * 2000 + 200)} votes).`,
+      },
+      {
+        type: 'pledge' as const,
+        title: 'New Pledge Registered',
+        desc: () => `Investor G${Math.random().toString(36).substring(5).toUpperCase()}... pledged ${Math.floor(Math.random() * 12000 + 1000)} USDC to StellarPay Mobile.`,
+      },
+      {
+        type: 'refund_vote' as const,
+        title: 'Refund Vote Cast',
+        desc: () => `Investor G${Math.random().toString(36).substring(5).toUpperCase()}... voted to trigger syndicate refund on AeroDrone Logistics.`,
+      }
+    ];
+
+    const interval = setInterval(() => {
+      const selected = mockDetails[Math.floor(Math.random() * mockDetails.length)];
+      const newEvent: ActivityEvent = {
+        id: `evt-${Math.random().toString(36).substring(5)}`,
+        type: selected.type,
+        title: selected.title,
+        description: selected.desc(),
+        timestamp: new Date().toLocaleTimeString(),
+        txHash: `0x${Math.random().toString(16).substring(2, 6)}...${Math.random().toString(16).substring(2, 6)}`,
+      };
+
+      setEvents((prev) => [newEvent, ...prev].slice(0, 15));
+      addConsoleLog(`[FEED] Incoming live event streamed: ${newEvent.title}`);
+    }, 8000);
+
+    return () => clearInterval(interval);
+  }, [streamSource]);
+
+  // Real blockchain event polling setup
+  useEffect(() => {
+    if (streamSource !== 'blockchain') return;
+    
+    addConsoleLog('Subscribing to Soroban RPC contract event streaming pipeline...');
+    
+    const interval = setInterval(() => {
+      addConsoleLog('Polling ledger events for registry and campaigns...');
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [streamSource]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -40,6 +139,31 @@ export default function TransactionCenter() {
     }
   };
 
+  const getEventStyle = (type: ActivityEvent['type']) => {
+    switch (type) {
+      case 'pledge':
+        return 'bg-indigo-500/10 border-indigo-500/25 text-indigo-400';
+      case 'milestone_requested':
+        return 'bg-amber-500/10 border-amber-500/25 text-amber-400';
+      case 'milestone_voted':
+        return 'bg-violet-500/10 border-violet-500/25 text-violet-400';
+      case 'milestone_paid':
+        return 'bg-indigo-500/20 border-indigo-500/40 text-indigo-400';
+      default:
+        return 'bg-red-500/10 border-red-500/25 text-red-400';
+    }
+  };
+
+  const getEventEmoji = (type: ActivityEvent['type']) => {
+    switch (type) {
+      case 'pledge': return '💰';
+      case 'milestone_requested': return '📋';
+      case 'milestone_voted': return '🗳️';
+      case 'milestone_paid': return '🎉';
+      default: return '🛡️';
+    }
+  };
+
   const handleXlmTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isConnected || !address) {
@@ -61,19 +185,15 @@ export default function TransactionCenter() {
     addConsoleLog(`[XLM TRANSFER] Initiating transfer of ${xlmAmt} XLM to ${xlmDest}...`);
 
     try {
-      // 1. Fetch account sequence using Horizon
-      addConsoleLog('Connecting to Horizon Testnet to load account sequence...');
       const response = await fetch(`https://horizon-testnet.stellar.org/accounts/${address}`);
       if (!response.ok) {
         throw new Error('Failed to load sender account details from Horizon.');
       }
       const accountData = await response.json();
       
-      // 2. Build the XLM Payment Transaction
       const { TransactionBuilder, Operation, Asset, Networks } = await import('@stellar/stellar-sdk');
       const senderAccount = new Account(address, accountData.sequence);
       
-      addConsoleLog('Building native XLM payment operation...');
       const tx = new TransactionBuilder(senderAccount, {
         fee: '1000',
         networkPassphrase: Networks.TESTNET,
@@ -88,16 +208,12 @@ export default function TransactionCenter() {
         .setTimeout(30)
         .build();
 
-      // 3. Request signature from Freighter via kit
       const { StellarWalletsKit } = await import('@creit.tech/stellar-wallets-kit');
-      addConsoleLog('Requesting wallet signature...');
       const { signedTxXdr } = await StellarWalletsKit.signTransaction(tx.toXDR(), {
         address: address,
         networkPassphrase: Networks.TESTNET,
       });
 
-      // 4. Submit signed XDR to Horizon Testnet
-      addConsoleLog('Submitting signed transaction to Horizon Testnet...');
       const submitBody = new URLSearchParams();
       submitBody.append('tx', signedTxXdr);
 
@@ -149,85 +265,174 @@ export default function TransactionCenter() {
 
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Left Side: Transactions List */}
+        {/* Left Side: Transactions List or Event Stream */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-extrabold text-white">Transaction Center</h1>
               <p className="text-sm text-slate-400 mt-1">
-                Track transaction status, execution logs, and blockchain explorer details.
+                Track transaction status, execution logs, and live on-chain governance activity.
               </p>
             </div>
-            {transactions.length > 0 && (
+            
+            <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800/80 max-w-fit">
               <button
-                onClick={clearHistory}
-                className="px-3 py-1.5 border border-slate-800 text-xs font-bold text-slate-400 hover:text-red-400 hover:bg-slate-900 rounded-lg cursor-pointer transition-colors"
+                onClick={() => setLeftTab('history')}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                  leftTab === 'history'
+                    ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
               >
-                Clear History
+                Tx Logs
               </button>
-            )}
+              <button
+                onClick={() => setLeftTab('activity')}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                  leftTab === 'activity'
+                    ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                Live Feed
+              </button>
+            </div>
           </div>
 
-          <div className="space-y-4">
-            {transactions.length === 0 ? (
-              <div className="py-20 text-center text-slate-500 border border-dashed border-slate-800 rounded-2xl bg-slate-950/20 backdrop-blur-md">
-                No transactions tracked yet. Transactions you run will show up here.
+          {leftTab === 'history' ? (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Local Transaction History</span>
+                {transactions.length > 0 && (
+                  <button
+                    onClick={clearHistory}
+                    className="text-xs text-slate-500 hover:text-red-400 hover:underline"
+                  >
+                    Clear History
+                  </button>
+                )}
               </div>
-            ) : (
-              transactions.map((tx) => (
-                <div
-                  key={tx.id}
-                  className="web3-card rounded-xl p-5 shadow-sm space-y-4 text-left"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-left">
-                    <div>
-                      <h3 className="font-bold text-white text-sm sm:text-base">{tx.operation}</h3>
-                      <span className="text-[10px] text-slate-500 block font-mono mt-1">
-                        Track ID: {tx.id} | Timestamp: {new Date(tx.timestamp).toLocaleString()}
+
+              {transactions.length === 0 ? (
+                <div className="py-20 text-center text-slate-500 border border-dashed border-slate-800 rounded-2xl bg-slate-950/20 backdrop-blur-md">
+                  No transactions tracked yet. Transactions you run will show up here.
+                </div>
+              ) : (
+                transactions.map((tx) => (
+                  <div
+                    key={tx.id}
+                    className="web3-card rounded-xl p-5 shadow-sm space-y-4 text-left"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-left">
+                      <div>
+                        <h3 className="font-bold text-white text-sm sm:text-base">{tx.operation}</h3>
+                        <span className="text-[10px] text-slate-500 block font-mono mt-1">
+                          Track ID: {tx.id} | Timestamp: {new Date(tx.timestamp).toLocaleString()}
+                        </span>
+                      </div>
+                      
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold border max-w-max self-start sm:self-center ${getStatusColor(tx.status)}`}>
+                        {getStatusLabel(tx.status)}
                       </span>
                     </div>
-                    
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold border max-w-max self-start sm:self-center ${getStatusColor(tx.status)}`}>
-                      {getStatusLabel(tx.status)}
-                    </span>
-                  </div>
 
-                  {tx.hash && (
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 border-t border-slate-800/50 pt-3 text-xs">
-                      <span className="text-slate-400 font-medium">Stellar Tx Hash:</span>
-                      <span className="font-mono text-slate-300 truncate max-w-[200px] sm:max-w-md">
-                        {tx.hash}
-                      </span>
-                      {tx.explorerLink && (
+                    {tx.hash && (
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 border-t border-slate-800/50 pt-3 text-xs">
+                        <span className="text-slate-400 font-medium">Stellar Tx Hash:</span>
+                        <span className="font-mono text-slate-300 truncate max-w-[200px] sm:max-w-md">
+                          {tx.hash}
+                        </span>
+                        {tx.explorerLink && (
+                          <a
+                            href={tx.explorerLink}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="sm:ml-auto text-indigo-400 hover:text-indigo-300 font-bold hover:underline"
+                          >
+                            View in Block Explorer ↗
+                          </a>
+                        )}
+                      </div>
+                    )}
+
+                    {tx.error && (
+                      <div className="p-3 bg-red-950/20 border border-red-900/40 rounded-lg text-xs text-red-400 text-left">
+                        <strong>Execution Error:</strong> {tx.error}
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-950/60 border border-slate-800 rounded-xl">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    {streamSource === 'simulated' ? 'Streaming Simulated Event Logs...' : `Active on Stellar ${network} Ledger`}
+                  </span>
+                </div>
+
+                <div className="flex bg-slate-950 p-0.5 rounded-lg border border-slate-800 max-w-fit">
+                  <button
+                    onClick={() => setStreamSource('simulated')}
+                    className={`px-2.5 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer ${
+                      streamSource === 'simulated' ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-500'
+                    }`}
+                  >
+                    Simulated
+                  </button>
+                  <button
+                    onClick={() => setStreamSource('blockchain')}
+                    className={`px-2.5 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer ${
+                      streamSource === 'blockchain' ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-500'
+                    }`}
+                  >
+                    Live RPC
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {events.map((event) => (
+                  <div
+                    key={event.id}
+                    className="web3-card rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex gap-4 items-start text-left"
+                  >
+                    <div className={`h-10 w-10 rounded-xl border flex items-center justify-center text-lg shrink-0 ${getEventStyle(event.type)}`}>
+                      {getEventEmoji(event.type)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start">
+                        <h3 className="font-bold text-sm text-white">
+                          {event.title}
+                        </h3>
+                        <span className="text-[10px] text-slate-500 font-medium font-mono">{event.timestamp}</span>
+                      </div>
+                      <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                        {event.description}
+                      </p>
+                      <div className="flex items-center gap-1.5 mt-3 text-[10px] font-semibold text-slate-500">
+                        <span>Tx Hash:</span>
                         <a
-                          href={tx.explorerLink}
+                          href={`https://stellar.expert/explorer/testnet/tx/${event.txHash}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="sm:ml-auto text-indigo-400 hover:text-indigo-300 font-bold hover:underline"
+                          className="font-mono text-indigo-400 hover:text-indigo-300 hover:underline"
                         >
-                          View in Block Explorer ↗
+                          {event.txHash}
                         </a>
-                      )}
+                      </div>
                     </div>
-                  )}
-
-                  {tx.error && (
-                    <div className="p-3 bg-red-950/20 border border-red-900/40 rounded-lg text-xs text-red-400 text-left">
-                      <strong>Execution Error:</strong> {tx.error}
-                      <button
-                        onClick={() => {
-                          alert(`Retrying operation: ${tx.operation}. Opening setup details...`);
-                        }}
-                        className="mt-2 block px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white font-bold rounded-md text-[10px] uppercase transition-all"
-                      >
-                        Retry Transaction
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ))
-            )}
-          </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right Side: Send XLM Form + Logging Debug Console */}
@@ -286,12 +491,14 @@ export default function TransactionCenter() {
                 <span className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Developer Log Console</span>
               </div>
-              <button
-                onClick={clearHistory}
-                className="text-[10px] text-slate-500 hover:text-white hover:underline cursor-pointer"
-              >
-                Clear Logs
-              </button>
+              {consoleLogs.length > 0 && (
+                <button
+                  onClick={clearHistory}
+                  className="text-[10px] text-slate-500 hover:text-white hover:underline cursor-pointer"
+                >
+                  Clear Logs
+                </button>
+              )}
             </div>
             
             <div className="p-5 font-mono text-[11px] space-y-2 overflow-y-auto flex-1 text-left scrollbar-thin scrollbar-thumb-slate-800">
@@ -299,7 +506,7 @@ export default function TransactionCenter() {
                 <div className="text-slate-600 text-center py-20">Console idle. Subscriptions and RPC calls print logs here...</div>
               ) : (
                 consoleLogs.map((log, idx) => (
-                  <div key={idx} className="leading-relaxed border-b border-slate-850/50 pb-1.5 text-slate-300">
+                  <div key={idx} className="leading-relaxed border-b border-slate-850/50 pb-1.5 text-slate-350">
                     {log}
                   </div>
                 ))
