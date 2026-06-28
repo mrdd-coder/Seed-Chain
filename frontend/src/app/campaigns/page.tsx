@@ -20,6 +20,7 @@ export default function Campaigns() {
   const [selectedCampaign, setSelectedCampaign] = useState<CampaignInfo | null>(null);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [userPledge, setUserPledge] = useState('0');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Form states for creating a campaign
   const [saltInput, setSaltInput] = useState('campaign_salt_1');
@@ -101,6 +102,16 @@ export default function Campaigns() {
       setLoading(false);
     }
   };
+
+  const filteredCampaigns = campaigns.filter((camp) => {
+    const title = camp.address.includes('Solar') 
+      ? 'SolarGrid Protocol' 
+      : camp.address.includes('Stellar') 
+      ? 'StellarPay Mobile' 
+      : `Campaign ${camp.address.substring(0, 8)}`;
+    return title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+           camp.address.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   const handleSelectCampaign = async (campaign: CampaignInfo) => {
     setSelectedCampaign(campaign);
@@ -410,16 +421,32 @@ export default function Campaigns() {
         {/* TAB content: BROWSE */}
         {activeTab === 'browse' && !selectedCampaign && (
           <div className="text-left">
+            {/* Search Input Bar */}
+            <div className="mb-6 max-w-md">
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500 text-sm">
+                  🔍
+                </span>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="bg-black/40 border border-slate-800 text-slate-200 rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 w-full"
+                  placeholder="Search campaigns by name or address..."
+                />
+              </div>
+            </div>
+
             <div className="space-y-6">
               {loading ? (
                 <div className="py-20 text-center text-slate-500">Loading campaigns...</div>
-              ) : campaigns.length === 0 ? (
-                <div className="py-20 text-center text-slate-500 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl">
-                  No campaigns active. Launch a campaign using the tab above!
+              ) : filteredCampaigns.length === 0 ? (
+                <div className="py-20 text-center text-slate-500 border border-dashed border-slate-250 dark:border-slate-800 rounded-2xl">
+                  {searchQuery ? 'No campaigns match your search.' : 'No campaigns active. Launch a campaign using the tab above!'}
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {campaigns.map((camp, idx) => {
+                  {filteredCampaigns.map((camp, idx) => {
                     const percent = Math.min(Math.round((Number(camp.totalPledged) / Number(camp.goal)) * 100), 100);
                     const isSim = camp.address.startsWith('CCampaign');
                     return (
