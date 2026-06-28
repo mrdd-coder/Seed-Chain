@@ -467,10 +467,14 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-800 dark:text-slate-200 transition-colors">
+    <div className="relative min-h-screen bg-[#030712] text-slate-200 transition-colors overflow-hidden">
+      {/* Ambient spotlights */}
+      <div className="spotlight-purple -top-40 -left-40" />
+      <div className="spotlight-cyan top-[500px] -right-40" />
+
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Header Tabs */}
         <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-5 mb-8 gap-4">
           <div>
@@ -480,13 +484,13 @@ export default function Dashboard() {
             </p>
           </div>
 
-          <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800/80 max-w-fit">
+          <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800/80 max-w-fit">
             <button
               onClick={() => { setActiveTab('browse'); setSelectedCampaign(null); }}
               className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer ${
                 activeTab === 'browse'
-                  ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+                  ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/25 shadow-md shadow-indigo-500/5'
+                  : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               Browse Campaigns
@@ -495,8 +499,8 @@ export default function Dashboard() {
               onClick={() => setActiveTab('create')}
               className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer ${
                 activeTab === 'create'
-                  ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+                  ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/25 shadow-md shadow-indigo-500/5'
+                  : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               Launch Campaign
@@ -508,19 +512,19 @@ export default function Dashboard() {
         <div className="mb-6 text-left">
           <button
             onClick={() => setShowAdvancedRegistry(!showAdvancedRegistry)}
-            className="text-xs font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-350 flex items-center gap-1 cursor-pointer"
+            className="text-xs font-bold text-slate-500 hover:text-slate-300 flex items-center gap-1 cursor-pointer"
           >
             {showAdvancedRegistry ? '▼' : '▶'} Advanced Developer Settings
           </button>
         </div>
 
         {showAdvancedRegistry && (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
-            <div className="flex items-center gap-2">
-              <span className="text-lg">⚙️</span>
+          <div className="bg-slate-900/60 border border-slate-805 rounded-2xl p-5 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-1 duration-200 backdrop-blur-md">
+            <div className="flex items-center gap-3">
+              <span className="text-xl">⚙️</span>
               <div className="text-left">
-                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Syndicate Registry</div>
-                <div className="text-xs font-medium text-slate-500 font-mono truncate max-w-[250px] sm:max-w-md">
+                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Syndicate Registry</div>
+                <div className="text-xs font-semibold text-slate-300 font-mono truncate max-w-[250px] sm:max-w-md">
                   {registryAddress}
                 </div>
               </div>
@@ -530,12 +534,12 @@ export default function Dashboard() {
                 type="text"
                 value={registryAddress}
                 onChange={(e) => setRegistryAddress(e.target.value)}
-                className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 text-xs font-mono rounded-lg px-3 py-1.5 focus:outline-none focus:border-emerald-500 w-full sm:w-64"
+                className="bg-black/40 border border-slate-800 text-xs font-mono rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-500 text-slate-200 w-full sm:w-64"
                 placeholder="Registry Address"
               />
               <button
                 onClick={loadBlockchainData}
-                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-bold rounded-lg cursor-pointer"
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-xl text-slate-200 transition-colors cursor-pointer"
               >
                 Reload
               </button>
@@ -563,45 +567,45 @@ export default function Dashboard() {
                       <div
                         key={idx}
                         onClick={() => handleSelectCampaign(camp)}
-                        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md cursor-pointer hover:border-emerald-500/30 transition-all group flex flex-col justify-between"
+                        className="web3-card rounded-2xl p-6 cursor-pointer group flex flex-col justify-between"
                       >
                         <div>
                           <div className="flex items-center justify-between mb-4">
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                              isSim ? 'bg-indigo-50 border-indigo-200 text-indigo-600 dark:bg-indigo-950/20' : 'bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-950/20'
+                            <span className={`text-[9px] font-bold tracking-wider px-2.5 py-0.5 rounded-full ${
+                              isSim ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400' : 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400'
                             } border`}>
                               {isSim ? 'SIMULATOR SANDBOX' : 'SOROBAN CONTRACT'}
                             </span>
                             {camp.isClosed && (
-                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400">
+                              <span className="text-[9px] font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-slate-850 border border-slate-800 text-slate-500">
                                 Closed
                               </span>
                             )}
                           </div>
                           
-                          <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-emerald-600 transition-colors">
+                          <h3 className="text-xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">
                             {camp.address.includes('Solar') ? 'SolarGrid Protocol' : camp.address.includes('Stellar') ? 'StellarPay Mobile' : `Campaign ${camp.address.substring(0, 8)}`}
                           </h3>
-                          <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mb-4 truncate">
+                          <p className="text-xs text-slate-500 font-mono mb-4 truncate">
                             Address: {camp.address}
                           </p>
                           
                           <div className="space-y-2 mb-6">
                             <div className="flex justify-between text-xs font-semibold">
-                              <span className="text-slate-500">Pledge Progress</span>
-                              <span className="text-slate-950 dark:text-white">
+                              <span className="text-slate-400">Pledge Progress</span>
+                              <span className="text-white">
                                 {percent}% ({camp.totalPledged} / {camp.goal} USDC)
                               </span>
                             </div>
-                            <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                              <div className="bg-emerald-600 h-full rounded-full" style={{ width: `${percent}%` }}></div>
+                            <div className="w-full bg-slate-900 border border-slate-800/80 h-2 rounded-full overflow-hidden">
+                              <div className="bg-gradient-to-r from-indigo-500 to-violet-600 h-full rounded-full" style={{ width: `${percent}%` }}></div>
                             </div>
                           </div>
                         </div>
 
-                        <div className="flex justify-between items-center text-xs text-slate-500 border-t border-slate-100 dark:border-slate-800 pt-4">
-                          <span>Goal: {camp.goal} USDC</span>
-                          <span className="font-bold text-emerald-600 dark:text-emerald-400 group-hover:underline">
+                        <div className="flex justify-between items-center text-xs text-slate-400 border-t border-slate-800/50 pt-4">
+                          <span>Goal: <strong className="text-slate-200">{camp.goal} USDC</strong></span>
+                          <span className="font-bold text-indigo-400 group-hover:text-indigo-300 group-hover:underline">
                             View details →
                           </span>
                         </div>
@@ -614,36 +618,36 @@ export default function Dashboard() {
 
             {/* Right side: XLM Transfer Panel (Level 1 Requirement) */}
             <div className="lg:col-span-1 space-y-6">
-              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+              <div className="bg-[#090d16]/40 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4 backdrop-blur-md">
                 <div>
-                  <h3 className="font-extrabold text-lg text-slate-900 dark:text-white flex items-center gap-2">
-                    <span className="text-emerald-600">🚀</span> Send Stellar XLM
+                  <h3 className="font-extrabold text-lg text-white flex items-center gap-2">
+                    <span className="text-indigo-400">🚀</span> Send Stellar XLM
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  <p className="text-xs text-slate-400 mt-1">
                     Easily transfer native XLM directly on the Stellar Testnet.
                   </p>
                 </div>
 
                 <form onSubmit={handleXlmTransfer} className="space-y-4">
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Recipient Stellar Address (G...)</label>
+                  <div className="space-y-1 text-left">
+                    <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Recipient Stellar Address (G...)</label>
                     <input
                       type="text"
                       value={xlmDest}
                       onChange={(e) => setXlmDest(e.target.value)}
-                      className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-emerald-500 w-full"
+                      className="bg-black/40 border border-slate-800 text-slate-200 rounded-xl px-3 py-2.5 text-xs font-mono focus:outline-none focus:border-indigo-500 w-full"
                       placeholder="e.g. GC3..."
                       required
                     />
                   </div>
 
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Amount (XLM)</label>
+                  <div className="space-y-1 text-left">
+                    <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Amount (XLM)</label>
                     <input
                       type="number"
                       value={xlmAmt}
                       onChange={(e) => setXlmAmt(e.target.value)}
-                      className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 w-full"
+                      className="bg-black/40 border border-slate-800 text-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-indigo-500 w-full"
                       placeholder="e.g. 10"
                       min="1"
                       required
@@ -653,7 +657,7 @@ export default function Dashboard() {
                   <button
                     type="submit"
                     disabled={xlmSending}
-                    className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all cursor-pointer disabled:bg-slate-400"
+                    className="w-full py-2.5 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-bold rounded-xl text-xs transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer disabled:bg-slate-700"
                   >
                     {xlmSending ? 'Transferring XLM...' : 'Send XLM'}
                   </button>
@@ -676,32 +680,32 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Campaign main details */}
               <div className="lg:col-span-2 space-y-6">
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-6">
+                <div className="bg-[#090d16]/40 border border-slate-800 rounded-2xl p-6 space-y-6 backdrop-blur-md">
                   <div>
-                    <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">
+                    <h2 className="text-2xl font-extrabold text-white">
                       {selectedCampaign.address.includes('Solar') ? 'SolarGrid Protocol' : selectedCampaign.address.includes('Stellar') ? 'StellarPay Mobile' : `Campaign Details`}
                     </h2>
-                    <p className="text-xs font-mono text-slate-500 dark:text-slate-400 mt-2 truncate">
+                    <p className="text-xs font-mono text-slate-500 mt-2 truncate">
                       Contract Address: {selectedCampaign.address}
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4 border-t border-b border-slate-100 dark:border-slate-800 py-4 text-center">
+                  <div className="grid grid-cols-3 gap-4 border-t border-b border-slate-800/80 py-4 text-center">
                     <div>
-                      <div className="text-xs text-slate-400 font-bold uppercase">Funding Goal</div>
-                      <div className="text-lg font-bold text-slate-900 dark:text-white mt-1">
+                      <div className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Funding Goal</div>
+                      <div className="text-lg font-bold text-slate-200 mt-1">
                         {selectedCampaign.goal} USDC
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs text-slate-400 font-bold uppercase">Total Raised</div>
-                      <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+                      <div className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Total Raised</div>
+                      <div className="text-lg font-bold text-indigo-400 mt-1">
                         {selectedCampaign.totalPledged} USDC
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs text-slate-400 font-bold uppercase">Escrow Status</div>
-                      <div className="text-lg font-bold text-slate-900 dark:text-white mt-1">
+                      <div className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Escrow Status</div>
+                      <div className="text-lg font-bold mt-1">
                         {selectedCampaign.refundActive ? '🔴 Refund Active' : '🟢 Active'}
                       </div>
                     </div>
@@ -722,25 +726,25 @@ export default function Dashboard() {
                           return (
                             <div
                               key={idx}
-                              className="flex items-start gap-4 p-4 border border-slate-150 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900/60"
+                              className="flex items-start gap-4 p-4 border border-slate-800 rounded-xl bg-slate-950/40"
                             >
-                              <div className="h-6 w-6 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-300">
+                              <div className="h-6 w-6 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-xs font-bold text-slate-400">
                                 {m.id}
                               </div>
                               <div className="flex-1 space-y-1 text-left">
                                 <div className="flex justify-between items-center">
-                                  <h4 className="font-bold text-sm text-slate-900 dark:text-white">{m.description}</h4>
-                                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
+                                  <h4 className="font-bold text-sm text-white">{m.description}</h4>
+                                  <span className={`text-[9px] font-bold tracking-wider px-2 py-0.5 rounded-full border ${
                                     m.status === 'Paid'
-                                      ? 'bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-950/20'
+                                      ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400'
                                       : m.status === 'PayoutRequested'
-                                      ? 'bg-amber-50 border-amber-200 text-amber-600 dark:bg-amber-950/20'
-                                      : 'bg-slate-100 border-slate-200 text-slate-400'
+                                      ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                                      : 'bg-slate-900 border-slate-800 text-slate-500'
                                   }`}>
                                     {m.status}
                                   </span>
                                 </div>
-                                <p className="text-xs text-slate-500">
+                                <p className="text-xs text-slate-400">
                                   Unlocks {m.amount_pct}% of total fund ({(Number(selectedCampaign.totalPledged) * m.amount_pct) / 100} USDC)
                                 </p>
 
@@ -749,7 +753,7 @@ export default function Dashboard() {
                                   <div className="flex items-center gap-2 pt-2">
                                     <button
                                       onClick={() => handleRequestPayout(m.id)}
-                                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
+                                      className="px-3 py-1.5 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
                                     >
                                       Request Payout
                                     </button>
@@ -761,13 +765,13 @@ export default function Dashboard() {
                                   <div className="flex items-center gap-2 pt-2">
                                     <button
                                       onClick={() => handleVote(m.id, true)}
-                                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
+                                      className="px-3 py-1.5 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
                                     >
                                       Approve Payout
                                     </button>
                                     <button
                                       onClick={() => handleVote(m.id, false)}
-                                      className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
+                                      className="px-3 py-1.5 bg-red-650 hover:bg-red-750 text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
                                     >
                                       Reject Payout
                                     </button>
@@ -785,19 +789,19 @@ export default function Dashboard() {
 
               {/* Campaign Actions Panel */}
               <div className="space-y-6">
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-6">
+                <div className="bg-[#090d16]/40 border border-slate-800 rounded-2xl p-6 space-y-6 backdrop-blur-md">
                   <div>
-                    <h3 className="font-bold text-lg text-slate-900 dark:text-white">Backing & Governance</h3>
-                    <p className="text-xs text-slate-500 mt-1">
+                    <h3 className="font-bold text-lg text-white">Backing & Governance</h3>
+                    <p className="text-xs text-slate-400 mt-1">
                       Support this project or vote to recall funds if you are an investor.
                     </p>
                   </div>
                   
                   {/* Pledge Form */}
                   <div className="space-y-3 text-left">
-                    <div className="flex justify-between items-center text-xs text-slate-500">
+                    <div className="flex justify-between items-center text-xs text-slate-400">
                       <span>Your investment:</span>
-                      <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{userPledge} USDC</span>
+                      <span className="font-mono font-bold text-indigo-400">{userPledge} USDC</span>
                     </div>
 
                     <div className="flex gap-2">
@@ -805,14 +809,14 @@ export default function Dashboard() {
                         type="number"
                         value={pledgeAmount}
                         onChange={(e) => setPledgeAmountInput(e.target.value)}
-                        className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full"
+                        className="bg-black/40 border border-slate-800 text-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-indigo-500 w-full"
                         placeholder="USDC Amount"
                       />
                     </div>
 
                     <button
                       onClick={handlePledge}
-                      className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                      className="w-full py-2.5 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-bold rounded-xl text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                     >
                       Invest in Project
                     </button>
@@ -858,17 +862,17 @@ export default function Dashboard() {
 
         {/* TAB content: CREATE CAMPAIGN */}
         {activeTab === 'create' && (
-          <div className="max-w-2xl mx-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6">
-            <h2 className="text-xl font-extrabold text-slate-900 dark:text-white mb-6">Launch New Investment Syndicate</h2>
+          <div className="max-w-2xl mx-auto bg-[#090d16]/40 border border-slate-800 rounded-2xl p-6 backdrop-blur-md">
+            <h2 className="text-xl font-extrabold text-white mb-6">Launch New Investment Syndicate</h2>
             
             <form onSubmit={handleCreateCampaign} className="space-y-5 text-left">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-400 dark:text-slate-350 uppercase tracking-wide">Funding Goal (USDC)</label>
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Funding Goal (USDC)</label>
                 <input
                   type="number"
                   value={goalInput}
                   onChange={(e) => setGoalInput(e.target.value)}
-                  className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full"
+                  className="bg-black/40 border border-slate-800 text-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-indigo-500 w-full"
                   placeholder="e.g. 10000"
                   required
                 />
@@ -886,7 +890,7 @@ export default function Dashboard() {
               </div>
 
               {showAdvancedCampaign && (
-                <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4 bg-slate-50/50 dark:bg-slate-900/20 animate-in fade-in slide-in-from-top-1 duration-200">
+                <div className="p-4 border border-slate-805 rounded-xl space-y-4 bg-black/30 animate-in fade-in slide-in-from-top-1 duration-200 animate-duration-150">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Unique Deployment Salt</label>
@@ -894,7 +898,7 @@ export default function Dashboard() {
                         type="text"
                         value={saltInput}
                         onChange={(e) => setSaltInput(e.target.value)}
-                        className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full"
+                        className="bg-black/40 border border-slate-800 text-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-indigo-500 w-full"
                         required
                       />
                     </div>
@@ -904,7 +908,7 @@ export default function Dashboard() {
                         type="number"
                         value={deadlineInput}
                         onChange={(e) => setDeadlineInput(e.target.value)}
-                        className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full"
+                        className="bg-black/40 border border-slate-800 text-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-indigo-500 w-full"
                         required
                       />
                     </div>
@@ -916,7 +920,7 @@ export default function Dashboard() {
                       type="text"
                       value={tokenInput}
                       onChange={(e) => setTokenInput(e.target.value)}
-                      className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 w-full"
+                      className="bg-black/40 border border-slate-800 text-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-indigo-500 w-full"
                       required
                     />
                   </div>
@@ -924,8 +928,8 @@ export default function Dashboard() {
               )}
 
               {/* Milestone Details */}
-              <div className="space-y-3 border-t border-slate-100 dark:border-slate-800 pt-4">
-                <h3 className="font-bold text-sm text-slate-900 dark:text-white">Escrow Milestones Setup</h3>
+              <div className="space-y-3 border-t border-slate-800 pt-4">
+                <h3 className="font-bold text-sm text-white">Escrow Milestones Setup</h3>
                 
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
@@ -933,7 +937,7 @@ export default function Dashboard() {
                       type="text"
                       value={milestone1Desc}
                       onChange={(e) => setMilestone1Desc(e.target.value)}
-                      className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 w-full"
+                      className="bg-black/40 border border-slate-800 text-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-indigo-500 w-full"
                       placeholder="Milestone 1 Description"
                       required
                     />
@@ -941,7 +945,7 @@ export default function Dashboard() {
                       type="number"
                       value={milestone1Pct}
                       onChange={(e) => setMilestone1Pct(e.target.value)}
-                      className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 w-24"
+                      className="bg-black/40 border border-slate-800 text-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-indigo-500 w-24"
                       placeholder="%"
                       required
                     />
@@ -952,7 +956,7 @@ export default function Dashboard() {
                       type="text"
                       value={milestone2Desc}
                       onChange={(e) => setMilestone2Desc(e.target.value)}
-                      className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 w-full"
+                      className="bg-black/40 border border-slate-800 text-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-indigo-500 w-full"
                       placeholder="Milestone 2 Description"
                       required
                     />
@@ -960,7 +964,7 @@ export default function Dashboard() {
                       type="number"
                       value={milestone2Pct}
                       onChange={(e) => setMilestone2Pct(e.target.value)}
-                      className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 w-24"
+                      className="bg-black/40 border border-slate-805 text-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-indigo-500 w-24"
                       placeholder="%"
                       required
                     />
@@ -970,7 +974,7 @@ export default function Dashboard() {
 
               <button
                 type="submit"
-                className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-all hover:scale-[1.01] active:scale-[0.99] mt-6 cursor-pointer"
+                className="w-full py-3 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-bold rounded-xl text-sm transition-all hover:scale-[1.01] active:scale-[0.99] mt-6 cursor-pointer"
               >
                 Launch Project Campaign
               </button>
