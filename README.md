@@ -11,12 +11,12 @@
 </p>
 
 <p align="center">
-  <a href="#-1-product-overview--problem-statement">Overview</a> •
-  <a href="#-2-technical-stack">Tech Stack</a> •
-  <a href="#-4-technical-architecture--component-flow">Architecture</a> •
-  <a href="#-6-local-development--testing">Development</a> •
-  <a href="#-7-stellar-testnet-deployment-guide">Deployment Guide</a> •
-  <a href="#-project-media--screenshots">Screenshots</a>
+  <a href="#1-product-overview-problem-statement">Overview</a> •
+  <a href="#2-technical-stack">Tech Stack</a> •
+  <a href="#4-technical-architecture-component-flow">Architecture</a> •
+  <a href="#6-local-development-testing">Development</a> •
+  <a href="#7-stellar-testnet-deployment-guide">Deployment Guide</a> •
+  <a href="#project-media-screenshots">Screenshots</a>
 </p>
 
 ---
@@ -28,19 +28,19 @@
 
 ## 📌 Table of Contents
 
-* [1. Product Overview & Problem Statement](#1-product-overview--problem-statement)
+* [1. Product Overview & Problem Statement](#1-product-overview-problem-statement)
   * [The Problem](#the-problem)
   * [The SeedChain Solution](#the-seedchain-solution)
 * [2. Technical Stack](#2-technical-stack)
 * [3. Directory Structure](#3-directory-structure)
-* [4. Technical Architecture & Component Flow](#4-technical-architecture--component-flow)
+* [4. Technical Architecture & Component Flow](#4-technical-architecture-component-flow)
   * [Inter-Contract Communication Flow](#inter-contract-communication-flow)
 * [5. Smart Contract Design](#5-smart-contract-design)
-  * [Data Storage & TTL Preservation](#data-storage--ttl-preservation)
+  * [Data Storage & TTL Preservation](#data-storage-ttl-preservation)
   * [Access Control](#access-control)
-* [6. Local Development & Testing](#6-local-development--testing)
+* [6. Local Development & Testing](#6-local-development-testing)
   * [Prerequisites](#prerequisites)
-  * [Compilation & Testing](#compilation--testing)
+  * [Compilation & Testing](#compilation-testing)
   * [Frontend Development](#frontend-development)
 * [7. Stellar Testnet Deployment Guide](#7-stellar-testnet-deployment-guide)
   * [Step 1: Configure Deployer Identity](#step-1-configure-deployer-identity)
@@ -49,10 +49,10 @@
   * [Step 4: Deploy the Syndicate Registry](#step-4-deploy-the-syndicate-registry)
   * [Step 5: Initialize the Syndicate Registry](#step-5-initialize-the-syndicate-registry)
   * [Step 6: Configure Frontend](#step-6-configure-frontend)
-* [8. Syndicate Configuration Log & Verification](#8-syndicate-configuration-log--verification)
+* [8. Syndicate Configuration Log & Verification](#8-syndicate-configuration-log-verification)
   * [On-Chain Contract Verification Links](#on-chain-contract-verification-links)
 * [9. Security Considerations](#9-security-considerations)
-* [10. Project Media & Screenshots](#10-project-media--screenshots)
+* [10. Project Media & Screenshots](#project-media-screenshots)
 
 ---
 
