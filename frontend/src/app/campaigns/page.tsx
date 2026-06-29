@@ -6,6 +6,7 @@ import { useWalletStore, NetworkId } from '../../state/wallet';
 import { useTransactionStore } from '../../state/transactions';
 import { getCampaigns, getCampaignInfo, getCampaignMilestones, getPledgeAmount, executeContractCall, CampaignInfo, Milestone } from '../../services/stellar';
 import { nativeToScVal, Address, xdr, Account } from '@stellar/stellar-sdk';
+import metadata from '../../contracts-metadata.json';
 
 export default function Campaigns() {
   const { address, isConnected, network, rpcUrl } = useWalletStore();
@@ -14,7 +15,7 @@ export default function Campaigns() {
   const [showAdvancedCampaign, setShowAdvancedCampaign] = useState(false);
 
   const [activeTab, setActiveTab] = useState<'browse' | 'create' | 'manage'>('browse');
-  const [registryAddress, setRegistryAddress] = useState('CBRegistryAddressExample1234567890Testnet');
+  const [registryAddress, setRegistryAddress] = useState(metadata.registryAddress || 'CBRegistryAddressExample1234567890Testnet');
   const [loading, setLoading] = useState(false);
   const [campaigns, setCampaigns] = useState<CampaignInfo[]>([]);
   const [selectedCampaign, setSelectedCampaign] = useState<CampaignInfo | null>(null);
@@ -78,17 +79,38 @@ export default function Campaigns() {
   // Load initial states from localStorage on client-side mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const savedCampaigns = localStorage.getItem('seedchain_local_campaigns');
-      if (savedCampaigns) {
-        setLocalCampaigns(JSON.parse(savedCampaigns));
+      try {
+        const savedCampaigns = localStorage.getItem('seedchain_local_campaigns');
+        if (savedCampaigns) {
+          const parsed = JSON.parse(savedCampaigns);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setLocalCampaigns(parsed);
+            setCampaigns(parsed);
+          } else {
+            setCampaigns(localCampaigns);
+          }
+        } else {
+          setCampaigns(localCampaigns);
+        }
+      } catch (e) {
+        console.error('Error loading saved campaigns:', e);
+        setCampaigns(localCampaigns);
       }
-      const savedMilestones = localStorage.getItem('seedchain_local_milestones');
-      if (savedMilestones) {
-        setLocalMilestones(JSON.parse(savedMilestones));
+      try {
+        const savedMilestones = localStorage.getItem('seedchain_local_milestones');
+        if (savedMilestones) {
+          setLocalMilestones(JSON.parse(savedMilestones));
+        }
+      } catch (e) {
+        console.error('Error loading saved milestones:', e);
       }
-      const savedPledges = localStorage.getItem('seedchain_local_user_pledges');
-      if (savedPledges) {
-        setLocalUserPledges(JSON.parse(savedPledges));
+      try {
+        const savedPledges = localStorage.getItem('seedchain_local_user_pledges');
+        if (savedPledges) {
+          setLocalUserPledges(JSON.parse(savedPledges));
+        }
+      } catch (e) {
+        console.error('Error loading saved pledges:', e);
       }
     }
   }, []);
@@ -121,7 +143,6 @@ export default function Campaigns() {
   }, [isConnected, network, registryAddress, localCampaigns]);
 
   const loadBlockchainData = async () => {
-    setLoading(true);
     try {
       addConsoleLog('Querying campaigns from registry contract...');
       const addrs = await getCampaigns(rpcUrl, registryAddress);
@@ -138,8 +159,6 @@ export default function Campaigns() {
       addConsoleLog('Failed to query contract registry. Loading simulation mode sandbox campaigns.');
       // Use local simulation data instead
       setCampaigns(localCampaigns);
-    } finally {
-      setLoading(false);
     }
   };
 
