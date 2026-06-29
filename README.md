@@ -359,12 +359,39 @@ All registry setup steps were executed on-chain via the `charlie` key pair. You 
 ## 📷 Project Media & Screenshots
 
 ### Desktop Web Application Interface
-<img width="1920" height="1080" alt="Screenshot (480)" src="https://github.com/user-attachments/assets/3647310e-ba69-491a-b984-d24f03fc2666" />
-<img width="1920" height="1080" alt="Screenshot (483)" src="https://github.com/user-attachments/assets/b337f66b-fb2f-4dfd-89af-0178f6ad27f3" />
-<img width="1920" height="1080" alt="Screenshot (481)" src="https://github.com/user-attachments/assets/dd9d26bf-b503-4d8b-8f69-f2a00ca79467" />
-<img width="1920" height="1080" alt="Screenshot (484)" src="https://github.com/user-attachments/assets/c2eec6b3-39be-4295-9258-9cea1e09e4e2" />
-<img width="1920" height="1080" alt="Screenshot (482)" src="https://github.com/user-attachments/assets/8ff9ed2f-0964-4741-bc17-a48d744577ca" />
-<img width="1920" height="1080" alt="Screenshot (485)" src="https://github.com/user-attachments/assets/b27b98fe-fc97-4807-9d6b-72e388aa24f3" />
+
+<table width="100%">
+  <tr>
+    <td width="50%" align="center" valign="top">
+      <strong>🏠 Landing Homepage</strong><br/>
+      <img src="https://github.com/user-attachments/assets/3647310e-ba69-491a-b984-d24f03fc2666" width="100%" alt="SeedChain Homepage" />
+    </td>
+    <td width="50%" align="center" valign="top">
+      <strong>📊 Investor Dashboard</strong><br/>
+      <img src="https://github.com/user-attachments/assets/b337f66b-fb2f-4dfd-89af-0178f6ad27f3" width="100%" alt="Investor Dashboard" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center" valign="top">
+      <strong>🔍 Browse Campaigns</strong><br/>
+      <img src="https://github.com/user-attachments/assets/dd9d26bf-b503-4d8b-8f69-f2a00ca79467" width="100%" alt="Browse Campaigns" />
+    </td>
+    <td width="50%" align="center" valign="top">
+      <strong>🚀 Launch Campaign</strong><br/>
+      <img src="https://github.com/user-attachments/assets/c2eec6b3-39be-4295-9258-9cea1e09e4e2" width="100%" alt="Launch Campaign" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center" valign="top">
+      <strong>💸 Transaction Center</strong><br/>
+      <img src="https://github.com/user-attachments/assets/8ff9ed2f-0964-4741-bc17-a48d744577ca" width="100%" alt="Transaction Center" />
+    </td>
+    <td width="50%" align="center" valign="top">
+      <strong>⚙️ Platform Settings</strong><br/>
+      <img src="https://github.com/user-attachments/assets/b27b98fe-fc97-4807-9d6b-72e388aa24f3" width="100%" alt="Platform Settings" />
+    </td>
+  </tr>
+</table>
 ### Deployed Testnet Transactions
 <table width="100%">
   <tr>
