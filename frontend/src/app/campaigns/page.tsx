@@ -243,21 +243,51 @@ export default function Campaigns() {
       const goalVal = BigInt(goalInput) * BigInt(10000000); // 7 decimals standard
       const deadlineVal = Number(deadlineInput);
 
-      // Structure milestones vector
-      // Struct properties must match Rust contract types
+      // Structure milestones vector with sorted keys
       const msListXdr = xdr.ScVal.scvVec([
         xdr.ScVal.scvMap([
-          new xdr.ScMapEntry({ key: xdr.ScVal.scvSymbol('id'), val: xdr.ScVal.scvU32(1) }),
-          new xdr.ScMapEntry({ key: xdr.ScVal.scvSymbol('description'), val: xdr.ScVal.scvString(milestone1Desc) }),
           new xdr.ScMapEntry({ key: xdr.ScVal.scvSymbol('amount_pct'), val: xdr.ScVal.scvU32(pct1) }),
+          new xdr.ScMapEntry({ key: xdr.ScVal.scvSymbol('description'), val: xdr.ScVal.scvString(milestone1Desc) }),
+          new xdr.ScMapEntry({ key: xdr.ScVal.scvSymbol('id'), val: xdr.ScVal.scvU32(1) }),
           new xdr.ScMapEntry({ key: xdr.ScVal.scvSymbol('status'), val: xdr.ScVal.scvSymbol('Pending') }),
         ]),
-        (xdr.ScMapEntry as any).fromJSON({ key: nativeToScVal('id'), val: nativeToScVal(2) }) as any // Alternative encode
+        xdr.ScVal.scvMap([
+          new xdr.ScMapEntry({ key: xdr.ScVal.scvSymbol('amount_pct'), val: xdr.ScVal.scvU32(pct2) }),
+          new xdr.ScMapEntry({ key: xdr.ScVal.scvSymbol('description'), val: xdr.ScVal.scvString(milestone2Desc) }),
+          new xdr.ScMapEntry({ key: xdr.ScVal.scvSymbol('id'), val: xdr.ScVal.scvU32(2) }),
+          new xdr.ScMapEntry({ key: xdr.ScVal.scvSymbol('status'), val: xdr.ScVal.scvSymbol('Pending') }),
+        ])
       ]);
 
-      // Invoke call
-      // ... (Real parameters conversion skipped for brevity, falling back to simulated payload if user doesn't import kit)
-      throw new Error('Real ledger interaction requires active testnet keys loaded in Freighter.');
+      addConsoleLog(`Initiating real on-chain campaign launch at registry: ${registryAddress}...`);
+      
+      const { StellarWalletsKit } = await import('@creit.tech/stellar-wallets-kit');
+      
+      const params = [
+        nativeToScVal(Address.fromString(address)),
+        xdr.ScVal.scvBytes(saltBytes),
+        nativeToScVal(goalVal),
+        nativeToScVal(deadlineVal),
+        msListXdr,
+        nativeToScVal(Address.fromString(tokenInput))
+      ];
+
+      await executeContractCall(
+        StellarWalletsKit,
+        rpcUrl,
+        network,
+        address,
+        registryAddress,
+        'create_campaign',
+        params,
+        'Launch Syndicate Project Campaign',
+        txId
+      );
+
+      // Reload lists from contract
+      await loadBlockchainData();
+      alert('Real On-Chain Project Campaign Deployed & Registered Successfully!');
+      setActiveTab('browse');
 
     } catch (err: any) {
       console.error(err);
