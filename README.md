@@ -1,14 +1,28 @@
-# SeedChain: Decentralized Startup Investment Syndicate
+<h1 align="center">🌱 SeedChain Syndicate 🔗</h1>
 
-SeedChain is a decentralized crowdfunding and startup investment platform built on the Stellar network using Soroban smart contracts. It enables startup founders to raise capital from global investor syndicates securely on-chain, using **milestone-based escrows**. Pledged funds are locked and only released incrementally after investor approval through decentralized governance voting.
+<p align="center">
+  <strong>A Decentralized Startup Investment Syndicate Platform built on the Stellar network using Soroban smart contracts.</strong>
+</p>
+
+<p align="center">
+  <a href="https://seedchain-rho.vercel.app/" target="_blank">
+    <img src="https://img.shields.io/badge/LIVE_DEMO-SEEDCHAIN--RHO.VERCEL.APP-purple?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="#-1-product-overview--problem-statement">Overview</a> •
+  <a href="#-2-technical-stack">Tech Stack</a> •
+  <a href="#-4-technical-architecture--component-flow">Architecture</a> •
+  <a href="#-6-local-development--testing">Development</a> •
+  <a href="#-7-stellar-testnet-deployment-guide">Deployment Guide</a> •
+  <a href="#-project-media--screenshots">Screenshots</a>
+</p>
 
 ---
 
-## 🔗 Project Links
-
 * **GitHub Repository:** [mrdd-coder/Seed-Chain](https://github.com/mrdd-coder/Seed-Chain)
-* **Live Demo URL:** https://seedchain-rho.vercel.app/
-* **Walkthrough Demo Video:** *[INSERT YOUR 1-2 MINUTE WALKTHROUGH VIDEO LINK HERE (Loom/Drive/YouTube)]*
+* **Walkthrough Demo Video:** *[Loom/Drive/YouTube Demo Link]*
 
 ---
 
