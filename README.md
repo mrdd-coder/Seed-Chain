@@ -11,6 +11,12 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/mrdd-coder/Seed-Chain/actions/workflows/ci-cd.yml" target="_blank">
+    <img src="https://github.com/mrdd-coder/Seed-Chain/actions/workflows/ci-cd.yml/badge.svg" alt="CI/CD Pipeline" />
+  </a>
+</p>
+
+<p align="center">
   <a href="#overview">Overview</a> •
   <a href="#tech-stack">Tech Stack</a> •
   <a href="#architecture">Architecture</a> •
