@@ -60,6 +60,25 @@ export default function HowItWorks() {
           </p>
         </div>
 
+        {/* Video Walkthrough Section */}
+        <div className="max-w-4xl mx-auto space-y-4 pt-4">
+          <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-[#090d16]/40 p-3 backdrop-blur-md shadow-2xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-violet-500/5 opacity-55 rounded-2xl pointer-events-none" />
+            <div className="relative w-full rounded-xl overflow-hidden border border-slate-800 shadow-inner bg-slate-950 animate-pulse-subtle">
+              <video
+                className="w-full h-auto"
+                controls
+                src="https://github.com/user-attachments/assets/fab799f8-768d-473e-8c0b-ef0ba81c863c"
+              >
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+          <p className="text-xs text-slate-500 font-medium">
+            🎬 SeedChain Syndicate Platform Walkthrough Demo Video
+          </p>
+        </div>
+
         {/* Steps Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left max-w-4xl mx-auto">
           {steps.map((step, idx) => (

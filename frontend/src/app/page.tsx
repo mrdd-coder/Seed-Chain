@@ -87,6 +87,12 @@ export default function Home() {
               Explore Campaigns
             </Link>
             <Link
+              href="/how-it-works"
+              className="px-6 py-3.5 bg-slate-950 hover:bg-slate-900 text-white border border-slate-800 rounded-xl font-bold transition-all hover:scale-[1.01] flex items-center gap-2"
+            >
+              <span>🎥</span> Watch Walkthrough
+            </Link>
+            <Link
               href="/dashboard?tab=create"
               className="px-6 py-3.5 bg-slate-950 hover:bg-slate-900 text-white border border-slate-800 rounded-xl font-bold transition-all hover:scale-[1.01]"
             >
