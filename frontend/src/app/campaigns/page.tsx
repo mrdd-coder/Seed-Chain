@@ -237,23 +237,46 @@ export default function Campaigns() {
     });
 
     try {
-      addConsoleLog(`[SIMULATION] Pledging ${pledgeAmount} tokens...`);
-      await new Promise((resolve) => setTimeout(resolve, 2500));
+      if (selectedCampaign.address.startsWith('CCampaign')) {
+        addConsoleLog(`[SIMULATION] Pledging ${pledgeAmount} tokens...`);
+        await new Promise((resolve) => setTimeout(resolve, 2500));
 
-      // Update local simulation state
-      const updatedPledged = (Number(selectedCampaign.totalPledged) + Number(pledgeAmount)).toString();
-      const updatedCampaign = { ...selectedCampaign, totalPledged: updatedPledged };
-      
-      setLocalCampaigns(localCampaigns.map(c => c.address === selectedCampaign.address ? updatedCampaign : c));
-      setSelectedCampaign(updatedCampaign);
-      
-      const newPledgeAmt = (Number(userPledge) + Number(pledgeAmount)).toString();
-      setLocalUserPledges({ ...localUserPledges, [selectedCampaign.address]: newPledgeAmt });
-      setUserPledge(newPledgeAmt);
+        // Update local simulation state
+        const updatedPledged = (Number(selectedCampaign.totalPledged) + Number(pledgeAmount)).toString();
+        const updatedCampaign = { ...selectedCampaign, totalPledged: updatedPledged };
+        
+        setLocalCampaigns(localCampaigns.map(c => c.address === selectedCampaign.address ? updatedCampaign : c));
+        setSelectedCampaign(updatedCampaign);
+        
+        const newPledgeAmt = (Number(userPledge) + Number(pledgeAmount)).toString();
+        setLocalUserPledges({ ...localUserPledges, [selectedCampaign.address]: newPledgeAmt });
+        setUserPledge(newPledgeAmt);
 
-      addConsoleLog(`[SIMULATION] Pledged successfully! New total pledged: ${updatedPledged}`);
-      useTransactionStore.getState().updateTransaction(txId, { status: 'success' });
-      alert('Pledge Simulated Successfully!');
+        addConsoleLog(`[SIMULATION] Pledged successfully! New total pledged: ${updatedPledged}`);
+        useTransactionStore.getState().updateTransaction(txId, { status: 'success' });
+        alert('Pledge Simulated Successfully!');
+      } else {
+        addConsoleLog(`Initiating real on-chain pledge of ${pledgeAmount} USDC...`);
+        
+        const amountVal = BigInt(pledgeAmount) * BigInt(10000000); // 7 decimals
+        const { StellarWalletsKit } = await import('@creit.tech/stellar-wallets-kit');
+        
+        await executeContractCall(
+          StellarWalletsKit,
+          rpcUrl,
+          network,
+          address,
+          selectedCampaign.address,
+          'pledge',
+          [nativeToScVal(Address.fromString(address)), nativeToScVal(amountVal)],
+          `Pledge ${pledgeAmount} USDC`,
+          txId
+        );
+        
+        // Reload details from contract
+        handleSelectCampaign(selectedCampaign);
+        alert('USDC Pledge on-chain transaction completed successfully!');
+      }
     } catch (err: any) {
       useTransactionStore.getState().updateTransaction(txId, { status: 'failed', error: err.message });
       alert(err.message);
@@ -270,23 +293,48 @@ export default function Campaigns() {
     });
 
     try {
-      addConsoleLog(`[SIMULATION] Casting vote for Milestone ${milestoneId}...`);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      if (selectedCampaign.address.startsWith('CCampaign')) {
+        addConsoleLog(`[SIMULATION] Casting vote for Milestone ${milestoneId}...`);
+        await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // Update milestone status if approval vote is simulated
-      const msList = milestones.map(m => {
-        if (m.id === milestoneId && approve) {
-          return { ...m, status: 'Paid' as any };
-        }
-        return m;
-      });
+        // Update milestone status if approval vote is simulated
+        const msList = milestones.map(m => {
+          if (m.id === milestoneId && approve) {
+            return { ...m, status: 'Paid' as any };
+          }
+          return m;
+        });
 
-      setLocalMilestones({ ...localMilestones, [selectedCampaign.address]: msList });
-      setMilestones(msList);
+        setLocalMilestones({ ...localMilestones, [selectedCampaign.address]: msList });
+        setMilestones(msList);
 
-      addConsoleLog('[SIMULATION] Milestone vote successfully processed!');
-      useTransactionStore.getState().updateTransaction(txId, { status: 'success' });
-      alert('Vote cast successfully (Milestone Approved & Payout Simulated)!');
+        addConsoleLog('[SIMULATION] Milestone vote successfully processed!');
+        useTransactionStore.getState().updateTransaction(txId, { status: 'success' });
+        alert('Vote cast successfully (Milestone Approved & Payout Simulated)!');
+      } else {
+        addConsoleLog(`Casting vote on-chain for Milestone ${milestoneId}...`);
+        
+        const { StellarWalletsKit } = await import('@creit.tech/stellar-wallets-kit');
+        await executeContractCall(
+          StellarWalletsKit,
+          rpcUrl,
+          network,
+          address,
+          selectedCampaign.address,
+          'vote_on_milestone',
+          [
+            nativeToScVal(Address.fromString(address)),
+            nativeToScVal(milestoneId),
+            nativeToScVal(approve)
+          ],
+          `Vote ${approve ? 'Yes' : 'No'} on Milestone ${milestoneId}`,
+          txId
+        );
+        
+        // Reload details
+        handleSelectCampaign(selectedCampaign);
+        alert('Milestone vote transaction submitted and verified successfully!');
+      }
     } catch (err: any) {
       useTransactionStore.getState().updateTransaction(txId, { status: 'failed', error: err.message });
       alert(err.message);
@@ -351,21 +399,88 @@ export default function Campaigns() {
     const txId = Math.random().toString(36).substring(7);
     addTransaction({
       id: txId,
-      operation: 'Initiate Refund Vote',
+      operation: 'Cast Refund Recall Vote',
       status: 'pending',
     });
 
     try {
-      addConsoleLog('[SIMULATION] Casting platform refund vote...');
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      if (selectedCampaign.address.startsWith('CCampaign')) {
+        addConsoleLog('[SIMULATION] Casting platform refund vote...');
+        await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      const updatedCampaign = { ...selectedCampaign, refundActive: true, isClosed: true };
-      setLocalCampaigns(localCampaigns.map(c => c.address === selectedCampaign.address ? updatedCampaign : c));
-      setSelectedCampaign(updatedCampaign);
+        const updatedCampaign = { ...selectedCampaign, refundActive: true, isClosed: true };
+        setLocalCampaigns(localCampaigns.map(c => c.address === selectedCampaign.address ? updatedCampaign : c));
+        setSelectedCampaign(updatedCampaign);
 
-      addConsoleLog('[SIMULATION] Refund vote successfully cast. Refund is now active.');
-      useTransactionStore.getState().updateTransaction(txId, { status: 'success' });
-      alert('Refund Vote Registered! Proportional refund is now ACTIVE.');
+        addConsoleLog('[SIMULATION] Refund vote successfully cast. Refund is now active.');
+        useTransactionStore.getState().updateTransaction(txId, { status: 'success' });
+        alert('Refund Vote Registered! Proportional refund is now ACTIVE.');
+      } else {
+        addConsoleLog('Casting refund recall vote on-chain...');
+        
+        const { StellarWalletsKit } = await import('@creit.tech/stellar-wallets-kit');
+        await executeContractCall(
+          StellarWalletsKit,
+          rpcUrl,
+          network,
+          address,
+          selectedCampaign.address,
+          'vote_on_refund',
+          [
+            nativeToScVal(Address.fromString(address)),
+            nativeToScVal(true)
+          ],
+          'Cast Refund Recall Vote',
+          txId
+        );
+        
+        // Reload details
+        handleSelectCampaign(selectedCampaign);
+        alert('Refund vote registered successfully!');
+      }
+    } catch (err: any) {
+      useTransactionStore.getState().updateTransaction(txId, { status: 'failed', error: err.message });
+      alert(err.message);
+    }
+  };
+
+  const handleClaimRefund = async () => {
+    if (!selectedCampaign || !address) return;
+    const txId = Math.random().toString(36).substring(7);
+    addTransaction({
+      id: txId,
+      operation: 'Claim Refund',
+      status: 'pending',
+    });
+
+    try {
+      if (selectedCampaign.address.startsWith('CCampaign')) {
+        addConsoleLog('[SIMULATION] Claiming refund...');
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        setUserPledge('0');
+        addConsoleLog('[SIMULATION] Refund successfully claimed!');
+        useTransactionStore.getState().updateTransaction(txId, { status: 'success' });
+        alert('Refund Claim Simulated! Remaining USDC returned.');
+      } else {
+        addConsoleLog('Submitting on-chain refund claim...');
+        
+        const { StellarWalletsKit } = await import('@creit.tech/stellar-wallets-kit');
+        await executeContractCall(
+          StellarWalletsKit,
+          rpcUrl,
+          network,
+          address,
+          selectedCampaign.address,
+          'claim_refund',
+          [nativeToScVal(Address.fromString(address))],
+          'Claim Refund',
+          txId
+        );
+        
+        // Reload details
+        handleSelectCampaign(selectedCampaign);
+        alert('Refund transaction completed and tokens returned successfully!');
+      }
     } catch (err: any) {
       useTransactionStore.getState().updateTransaction(txId, { status: 'failed', error: err.message });
       alert(err.message);
@@ -673,10 +788,7 @@ export default function Campaigns() {
                       <div className="p-3 border border-red-200 bg-red-50 dark:bg-red-950/20 dark:border-red-900 rounded-lg text-red-600 dark:text-red-400">
                         <strong>Refund Active!</strong> Proportional remaining escrow funds can be claimed.
                         <button
-                          onClick={() => {
-                            alert('Refund Claim Simulated! Remaining USDC returned.');
-                            setUserPledge('0');
-                          }}
+                          onClick={handleClaimRefund}
                           className="w-full mt-2 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-xs transition-all cursor-pointer"
                         >
                           Claim Refund
