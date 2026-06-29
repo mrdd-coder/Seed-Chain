@@ -28,7 +28,10 @@
 ---
 
 * **GitHub Repository:** [mrdd-coder/Seed-Chain](https://github.com/mrdd-coder/Seed-Chain)
-* **Walkthrough Demo Video:** *[Loom/Drive/YouTube Demo Link]*
+* **Walkthrough Demo Video:** 
+
+https://github.com/user-attachments/assets/fab799f8-768d-473e-8c0b-ef0ba81c863c
+
 
 ---
 
