@@ -75,11 +75,50 @@ export default function Campaigns() {
   // Action: Pledge
   const [pledgeAmount, setPledgeAmountInput] = useState('1000');
 
+  // Load initial states from localStorage on client-side mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedCampaigns = localStorage.getItem('seedchain_local_campaigns');
+      if (savedCampaigns) {
+        setLocalCampaigns(JSON.parse(savedCampaigns));
+      }
+      const savedMilestones = localStorage.getItem('seedchain_local_milestones');
+      if (savedMilestones) {
+        setLocalMilestones(JSON.parse(savedMilestones));
+      }
+      const savedPledges = localStorage.getItem('seedchain_local_user_pledges');
+      if (savedPledges) {
+        setLocalUserPledges(JSON.parse(savedPledges));
+      }
+    }
+  }, []);
+
+  // Save state to localStorage whenever local sandbox lists change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('seedchain_local_campaigns', JSON.stringify(localCampaigns));
+    }
+  }, [localCampaigns]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('seedchain_local_milestones', JSON.stringify(localMilestones));
+    }
+  }, [localMilestones]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('seedchain_local_user_pledges', JSON.stringify(localUserPledges));
+    }
+  }, [localUserPledges]);
+
   useEffect(() => {
     if (isConnected && registryAddress.length > 20) {
       loadBlockchainData();
+    } else {
+      setCampaigns(localCampaigns);
     }
-  }, [isConnected, network, registryAddress]);
+  }, [isConnected, network, registryAddress, localCampaigns]);
 
   const loadBlockchainData = async () => {
     setLoading(true);
@@ -91,8 +130,9 @@ export default function Campaigns() {
         const info = await getCampaignInfo(rpcUrl, addr);
         campaignDetails.push(info);
       }
-      setCampaigns(campaignDetails);
-      addConsoleLog(`Loaded ${campaignDetails.length} campaigns from contract registry.`);
+      // Combine local sandbox campaigns with real testnet on-chain campaigns
+      setCampaigns([...localCampaigns, ...campaignDetails]);
+      addConsoleLog(`Loaded ${campaignDetails.length} on-chain campaigns from contract registry.`);
     } catch (err: any) {
       console.error(err);
       addConsoleLog('Failed to query contract registry. Loading simulation mode sandbox campaigns.');
@@ -246,6 +286,7 @@ export default function Campaigns() {
         const updatedCampaign = { ...selectedCampaign, totalPledged: updatedPledged };
         
         setLocalCampaigns(localCampaigns.map(c => c.address === selectedCampaign.address ? updatedCampaign : c));
+        setCampaigns(campaigns.map(c => c.address === selectedCampaign.address ? updatedCampaign : c));
         setSelectedCampaign(updatedCampaign);
         
         const newPledgeAmt = (Number(userPledge) + Number(pledgeAmount)).toString();
@@ -410,6 +451,7 @@ export default function Campaigns() {
 
         const updatedCampaign = { ...selectedCampaign, refundActive: true, isClosed: true };
         setLocalCampaigns(localCampaigns.map(c => c.address === selectedCampaign.address ? updatedCampaign : c));
+        setCampaigns(campaigns.map(c => c.address === selectedCampaign.address ? updatedCampaign : c));
         setSelectedCampaign(updatedCampaign);
 
         addConsoleLog('[SIMULATION] Refund vote successfully cast. Refund is now active.');
