@@ -7,7 +7,7 @@ SeedChain is a decentralized crowdfunding and startup investment platform built 
 ## 🔗 Project Links
 
 * **GitHub Repository:** [mrdd-coder/Seed-Chain](https://github.com/mrdd-coder/Seed-Chain)
-* **Live Demo URL:** *[INSERT YOUR LIVE DEMO LINK HERE (Vercel/Netlify)]*
+* **Live Demo URL:** https://seedchain-rho.vercel.app/
 * **Walkthrough Demo Video:** *[INSERT YOUR 1-2 MINUTE WALKTHROUGH VIDEO LINK HERE (Loom/Drive/YouTube)]*
 
 ---
@@ -359,8 +359,12 @@ All registry setup steps were executed on-chain via the `charlie` key pair. You 
 ## 📷 Project Media & Screenshots
 
 ### Desktop Web Application Interface
-*[INSERT YOUR SCREENSHOT OF THE DESKTOP HOMEPAGE / DASHBOARD INTERFACE HERE]*
-
+<img width="1920" height="1080" alt="Screenshot (480)" src="https://github.com/user-attachments/assets/3647310e-ba69-491a-b984-d24f03fc2666" />
+<img width="1920" height="1080" alt="Screenshot (483)" src="https://github.com/user-attachments/assets/b337f66b-fb2f-4dfd-89af-0178f6ad27f3" />
+<img width="1920" height="1080" alt="Screenshot (481)" src="https://github.com/user-attachments/assets/dd9d26bf-b503-4d8b-8f69-f2a00ca79467" />
+<img width="1920" height="1080" alt="Screenshot (484)" src="https://github.com/user-attachments/assets/c2eec6b3-39be-4295-9258-9cea1e09e4e2" />
+<img width="1920" height="1080" alt="Screenshot (482)" src="https://github.com/user-attachments/assets/8ff9ed2f-0964-4741-bc17-a48d744577ca" />
+<img width="1920" height="1080" alt="Screenshot (485)" src="https://github.com/user-attachments/assets/b27b98fe-fc97-4807-9d6b-72e388aa24f3" />
 ### Deployed Testnet Transactions
 <table width="100%">
   <tr>
@@ -376,13 +380,16 @@ All registry setup steps were executed on-chain via the `charlie` key pair. You 
 </table>
 
 ### Wallet Options Available (Freighter & Albedo modal)
-*[INSERT YOUR SCREENSHOT OF WALLET CONNECT POPUP HERE]*
+<img width="1920" height="1080" alt="Screenshot (479)" src="https://github.com/user-attachments/assets/81ebacf8-175a-4eb4-b699-c9e73688a5ef" />
+
 
 ### Mobile Responsive UI
-*[INSERT YOUR SCREENSHOT OF MOBILE RESPONSIVE DASHBOARD LAYOUT HERE]*
+<img width="750" height="1599" alt="WhatsApp Image 2026-06-29 at 8 02 17 PM" src="https://github.com/user-attachments/assets/cee7991a-59df-4a66-bf84-db30c8dde289" />
+
 
 ### CI/CD Pipeline Running (GitHub Actions Checks)
-<img width="821" height="253" alt="Screenshot 2026-06-28 195128 - Copy" src="https://github.com/user-attachments/assets/792515b7-dc27-420b-aeaa-be97867b8236" />
+<img width="1249" height="1600" alt="WhatsApp Image 2026-06-29 at 3 16 42 PM" src="https://github.com/user-attachments/assets/cbf034e1-7edf-4fed-977c-cc99ffb9bfca" />
+
 
 ### Test Output (Passing Rust & Frontend Vitest tests)
 <img width="623" height="235" alt="image" src="https://github.com/user-attachments/assets/0a1cb4d8-88fe-40b1-937f-154c020feaa1" />
