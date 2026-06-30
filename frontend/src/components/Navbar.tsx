@@ -78,7 +78,6 @@ export default function Navbar() {
     { href: '/dashboard', label: 'Dashboard' },
     { href: '/campaigns', label: 'Campaigns' },
     { href: '/transactions', label: 'Tx Center' },
-    { href: '/how-it-works', label: 'How It Works' },
     { href: '/settings', label: 'Settings' },
   ];
 

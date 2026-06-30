@@ -395,6 +395,7 @@ All registry setup steps were executed on-chain via the `charlie` key pair. You 
 * **Contract Deployment (SyndicateRegistry Instance):** [Tx 7ef33b0c...](https://stellar.expert/explorer/testnet/tx/7ef33b0c7ecee99481f010ac76e6e6f1da196d964d14527c5e5040486d71538b)
 * **Contract Call (Initialize Registry):** [Tx eaf01c6f...](https://stellar.expert/explorer/testnet/tx/eaf01c6f09b64a60d82f5ffa23e8b2aacb13234f7c42c07ea978254b4c739c7b)
 * **Contract Call (Configure Campaign WASM Hash):** [Tx a1e5d5d8...](https://stellar.expert/explorer/testnet/tx/a1e5d5d8cc6ffb22fac77ae2f71f61575c13f0a1493aed174dafb3a61f97d103)
+* **Transaction Hash for Contract Interaction:** [Tx b7444e4a...](https://stellar.expert/explorer/testnet/tx/b7444e4aebfd12e617a5941337269a22350c65200903c0080d36da43202c06a1)
 
 ---
 
